@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Brûlé Café</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cream:    #f5efe6;
+      --espresso: #2b1a0f;
+      --caramel:  #c8843a;
+      --latte:    #d6b896;
+      --charcoal: #1c1c1c;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--cream);
+      color: var(--espresso);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      background: var(--espresso);
+      padding: 1.2rem 2rem;
+    }
+    .navbar-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--cream) !important;
+      letter-spacing: .04em;
+    }
+    .navbar-brand span { color: var(--caramel); }
+    .nav-link {
+      color: var(--latte) !important;
+      font-size: .85rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      transition: color .25s;
+    }
+    .nav-link:hover { color: var(--cream) !important; }
+    .nav-btn {
+      border: 1px solid var(--caramel);
+      color: var(--caramel) !important;
+      border-radius: 0;
+      padding: .4rem 1.2rem;
+      transition: background .25s, color .25s;
+    }
+    .nav-btn:hover { background: var(--caramel); color: var(--espresso) !important; }
+    .navbar-toggler { border-color: var(--latte); }
+    .navbar-toggler-icon { filter: invert(1); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 92vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+    .hero-left {
+      background: var(--espresso);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5rem 4rem 5rem 6rem;
+      position: relative;
+    }
+    .hero-left::after {
+      content: '';
+      position: absolute;
+      right: -1px; top: 0; bottom: 0;
+      width: 60px;
+      background: var(--cream);
+      clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+    .hero-eyebrow {
+      font-size: .75rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--caramel);
+      margin-bottom: 1.4rem;
+    }
+    .hero-title {
+      font-size: clamp(2.8rem, 5vw, 4.5rem);
+      color: var(--cream);
+      line-height: 1.1;
+      margin-bottom: 1.8rem;
+    }
+    .hero-title em { color: var(--caramel); font-style: italic; }
+    .hero-sub {
+      color: var(--latte);
+      font-size: 1rem;
+      line-height: 1.75;
+      max-width: 360px;
+      margin-bottom: 2.8rem;
+    }
+    .btn-primary-cafe {
+      display: inline-block;
+      background: var(--caramel);
+      color: var(--espresso);
+      padding: .85rem 2.4rem;
+      font-size: .85rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background .25s, color .25s;
+      border-radius: 0;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary-cafe:hover { background: var(--cream); color: var(--espresso); }
+    .btn-outline-cafe {
+      display: inline-block;
+      border: 1px solid var(--latte);
+      color: var(--latte);
+      padding: .85rem 2.4rem;
+      font-size: .85rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-weight: 500;
+      transition: border-color .25s, color .25s;
+      margin-left: 1rem;
+    }
+    .btn-outline-cafe:hover { border-color: var(--cream); color: var(--cream); }
+    .hero-right {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-right img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 8s ease;
+    }
+    .hero-right:hover img { transform: scale(1.04); }
+    .hero-badge {
+      position: absolute;
+      bottom: 2.5rem; left: -2rem;
+      width: 130px; height: 130px;
+      background: var(--caramel);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--espresso);
+      font-family: 'Playfair Display', serif;
+      font-size: .85rem;
+      line-height: 1.3;
+      box-shadow: 0 8px 32px rgba(0,0,0,.25);
+    }
+    .hero-badge strong { font-size: 1.6rem; display: block; }
+
+    /* ── STRIP ── */
+    .strip {
+      background: var(--caramel);
+      padding: .9rem 0;
+      overflow: hidden;
+    }
+    .strip-inner {
+      display: flex;
+      gap: 4rem;
+      animation: marquee 18s linear infinite;
+      white-space: nowrap;
+    }
+    .strip-item {
+      font-size: .75rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--espresso);
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .strip-dot { opacity: .5; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ── SECTION TITLES ── */
+    .section-label {
+      font-size: .72rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--caramel);
+      margin-bottom: .6rem;
+    }
+    .section-title {
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      color: var(--espresso);
+      line-height: 1.15;
+    }
+
+    /* ── ABOUT ── */
+    .about { padding: 7rem 0; background: var(--cream); }
+    .about-img-wrap { position: relative; }
+    .about-img-wrap img {
+      width: 100%; height: 480px;
+      object-fit: cover;
+      display: block;
+    }
+    .about-accent {
+      position: absolute;
+      top: -1.5rem; left: -1.5rem;
+      width: 160px; height: 160px;
+      border: 2px solid var(--caramel);
+      z-index: -1;
+    }
+    .about-text { padding: 2rem 1rem 2rem 3rem; }
+    .about-text p { color: #5a3e2b; line-height: 1.9; margin-bottom: 1.4rem; }
+    .about-stats { display: flex; gap: 2.5rem; margin-top: 2.5rem; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      color: var(--caramel);
+      line-height: 1;
+    }
+    .stat-label { font-size: .78rem; letter-spacing: .1em; color: #7a5c45; text-transform: uppercase; margin-top: .3rem; }
+
+    /* ── MENU ── */
+    .menu-section { padding: 7rem 0; background: var(--espresso); }
+    .menu-section .section-label { color: var(--caramel); }
+    .menu-section .section-title { color: var(--cream); }
+    .menu-sub { color: var(--latte); margin-top: .6rem; font-size: .9rem; }
+    .menu-card {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      transition: border-color .3s, transform .3s;
+      overflow: hidden;
+      height: 100%;
+    }
+    .menu-card:hover { border-color: var(--caramel); transform: translateY(-4px); }
+    .menu-card img { width: 100%; height: 220px; object-fit: cover; display: block; }
+    .menu-card-body { padding: 1.4rem 1.6rem 1.8rem; }
+    .menu-card-title { font-family: 'Playfair Display', serif; color: var(--cream); font-size: 1.2rem; margin-bottom: .4rem; }
+    .menu-card-desc { color: var(--latte); font-size: .85rem; line-height: 1.7; margin-bottom: 1rem; }
+    .menu-price { font-family: 'Playfair Display', serif; color: var(--caramel); font-size: 1.3rem; }
+    .menu-tag {
+      font-size: .68rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--espresso);
+      background: var(--caramel);
+      padding: .18rem .55rem;
+      margin-left: .6rem;
+      vertical-align: middle;
+    }
+
+    /* ── EXPERIENCE ── */
+    .experience { padding: 7rem 0; background: var(--cream); }
+    .exp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; }
+    .exp-item {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 3/4;
+    }
+    .exp-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s ease; }
+    .exp-item:hover img { transform: scale(1.06); }
+    .exp-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(43,26,15,.85) 0%, transparent 55%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.8rem;
+      opacity: 0;
+      transition: opacity .4s;
+    }
+    .exp-item:hover .exp-overlay { opacity: 1; }
+    .exp-overlay h4 { font-family: 'Playfair Display', serif; color: var(--cream); font-size: 1.3rem; margin-bottom: .3rem; }
+    .exp-overlay p { color: var(--latte); font-size: .82rem; }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials { padding: 7rem 0; background: #f0e7d8; }
+    .testi-card {
+      background: var(--cream);
+      padding: 2.4rem;
+      border-left: 3px solid var(--caramel);
+      height: 100%;
+    }
+    .testi-quote { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--espresso); line-height: 1.8; margin-bottom: 1.5rem; font-style: italic; }
+    .testi-author { display: flex; align-items: center; gap: 1rem; }
+    .testi-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; }
+    .testi-name { font-size: .88rem; font-weight: 500; color: var(--espresso); }
+    .testi-role { font-size: .75rem; color: var(--caramel); letter-spacing: .06em; }
+    .stars { color: var(--caramel); font-size: .85rem; margin-bottom: .8rem; letter-spacing: .1em; }
+
+    /* ── RESERVATION ── */
+    .reservation {
+      padding: 7rem 0;
+      background: var(--espresso);
+      position: relative;
+      overflow: hidden;
+    }
+    .reservation::before {
+      content: 'Reserve';
+      position: absolute;
+      top: 50%; left: -1rem;
+      transform: translateY(-50%);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(6rem, 14vw, 14rem);
+      color: rgba(255,255,255,.03);
+      white-space: nowrap;
+      pointer-events: none;
+      line-height: 1;
+    }
+    .reservation .section-title { color: var(--cream); }
+    .reservation .section-label { color: var(--caramel); }
+    .res-sub { color: var(--latte); margin-top: .7rem; margin-bottom: 3rem; }
+    .form-label { color: var(--latte); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .4rem; }
+    .form-control, .form-select {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--cream);
+      border-radius: 0;
+      padding: .75rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .form-control:focus, .form-select:focus {
+      background: rgba(255,255,255,.1);
+      border-color: var(--caramel);
+      box-shadow: none;
+      color: var(--cream);
+    }
+    .form-control::placeholder { color: rgba(214,184,150,.4); }
+    .form-select option { background: var(--espresso); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--charcoal);
+      padding: 4rem 0 2rem;
+      color: #8a7a6e;
+    }
+    .footer-brand { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--cream); margin-bottom: .8rem; }
+    .footer-brand span { color: var(--caramel); }
+    .footer-tagline { font-size: .82rem; line-height: 1.7; color: #7a6a5e; max-width: 240px; }
+    .footer-heading { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--latte); margin-bottom: 1.2rem; }
+    .footer-links { list-style: none; padding: 0; }
+    .footer-links li { margin-bottom: .5rem; }
+    .footer-links a { color: #8a7a6e; text-decoration: none; font-size: .88rem; transition: color .2s; }
+    .footer-links a:hover { color: var(--caramel); }
+    .footer-divider { border-color: rgba(255,255,255,.07); margin: 2.5rem 0 1.5rem; }
+    .footer-bottom { font-size: .78rem; }
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--latte);
+      text-decoration: none;
+      font-size: .85rem;
+      transition: border-color .2s, color .2s;
+    }
+    .social-link:hover { border-color: var(--caramel); color: var(--caramel); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 767px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-left { padding: 4rem 2rem; }
+      .hero-left::after { display: none; }
+      .hero-right { height: 55vw; }
+      .about-text { padding: 2rem .5rem; }
+      .about-stats { flex-wrap: wrap; gap: 1.5rem; }
+      .exp-grid { grid-template-columns: 1fr 1fr; }
+      .exp-grid .exp-item:last-child { grid-column: span 2; aspect-ratio: 2/1; }
+      .btn-outline-cafe { margin-left: 0; margin-top: .8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand" href="#">Brûlé<span>.</span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav mx-auto gap-lg-4">
+        <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Menú</a></li>
+      </ul>
+      <a href="#reserva" class="nav-link nav-btn ms-lg-3">Reservar</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Desde 2012 · Santiago, Chile</p>
+    <h1 class="hero-title">El café que<br/><em>despierta</em><br/>tu día.</h1>
+    <p class="hero-sub">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      Grain sourced from single-origin farms, roasted in-house each morning
+      and served with quiet precision.
+    </p>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="#menu" class="btn-primary-cafe">Ver menú</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img src="https://picsum.photos/seed/cafe1/900/800" alt="Interior cafetería"/>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-inner" id="stripInner"></div>
+</div>
+
+
+<!-- MENU -->
+<section class="menu-section" id="menu">
+  <div class="container">
+    <div class="text-center mb-5">
+      <p class="section-label">Lo que ofrecemos</p>
+      <h2 class="section-title">Nuestro menú</h2>
+      <p class="menu-sub">Lorem ipsum dolor sit amet, consectetur adipiscing elit ut aliquam.</p>
+    </div>
+    <div class="row g-4">
+      <!-- Card 1 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="menu-card">
+          <img src="https://picsum.photos/seed/coffee1/400/220" alt="Espresso"/>
+          <div class="menu-card-body">
+            <h5 class="menu-card-title">Espresso Romano <span class="menu-tag">Popular</span></h5>
+            <p class="menu-card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim.</p>
+            <span class="menu-price">$2.800</span>
+          </div>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="menu-card">
+          <img src="https://picsum.photos/seed/coffee2/400/220" alt="Latte"/>
+          <div class="menu-card-body">
+            <h5 class="menu-card-title">Latte de Avellana</h5>
+            <p class="menu-card-desc">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.</p>
+            <span class="menu-price">$3.500</span>
+          </div>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="menu-card">
+          <img src="https://picsum.photos/seed/coffee3/400/220" alt="Flat White"/>
+          <div class="menu-card-body">
+            <h5 class="menu-card-title">Flat White <span class="menu-tag">Nuevo</span></h5>
+            <p class="menu-card-desc">Excepteur sint occaecat cupidatat non proident deserunt mollit anim.</p>
+            <span class="menu-price">$3.200</span>
+          </div>
+        </div>
+      </div>
+      <!-- Card 4 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="menu-card">
+          <img src="https://picsum.photos/seed/coffee4/400/220" alt="Pastel"/>
+          <div class="menu-card-body">
+            <h5 class="menu-card-title">Pastel de Almendra</h5>
+            <p class="menu-card-desc">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.</p>
+            <span class="menu-price">$4.100</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-5">
+      <a href="#" class="btn-primary-cafe">Ver menú completo</a>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Marquee strip
+  const items = ['Café de especialidad','Granos de origen único','Tostado artesanal','Pastelería casera','Brunch de fin de semana','Baristas certificados','Wifi de alta velocidad'];
+  const strip = document.getElementById('stripInner');
+  const doubled = [...items, ...items];
+  strip.innerHTML = doubled.map(t => `<span class="strip-item">${t}</span><span class="strip-item strip-dot">◆</span>`).join('');
+</script>
+</body>
+</html>
