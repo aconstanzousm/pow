@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú de la Cafetería</title>
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">Tumami Cafetería</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mynavbar">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="menu.html">Menú</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="aboutus.html">Sobre nosotros</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Carousel -->
+    <div id="demo" class="carousel slide" data-bs-ride="">
+        <!-- The slideshow/carousel -->
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="https://picsum.photos/id/684/600/400" alt="Menú de la Cafetería" class="d-block w-100"
+                    style="height: 400px;">
+                <div class="carousel-caption">
+                    <h3>PAGO</h3>
+                    <p>Completa la información de pago para finalizar tu pedido.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Carousel -->
+
+
+    <div class="container-fluid bg-dark text-white p-4">
+        <div class="row">
+            <div class="col text-center mt-5">
+                <h1>¡Gracias por tu pedido!</h1>
+                <p>Por favor, completa la siguiente información para que podamos procesar tu pago y entregar tu pedido.</p>
+            </div>
+        </div>
+    <!-- Formulario de pago - Información del cliente (Nombre, Nota) -->
+    <div class="container mt-5 bg-dark text-white p-4 rounded">
+        <h2>Información de Pago</h2>
+        <form>
+            <div class="mb-3">
+                <label for="name" class="form-label">Nombre Completo</label>
+                <input type="text" class="form-control" id="name" placeholder="Con este nombre te llamarán para entregar tu pedido" required>
+            </div>
+            <div class="mb-3">
+                <label for="note" class="form-label">Nota para el pedido (opcional)</label>
+                <textarea class="form-control" id="note" rows="3" placeholder="Agrega alguna nota para tu pedido.
+Por ejemplo, si tienes alergias, preferencias especiales, o si quieres que dibujemos una carita feliz :)"></textarea>
+            </div>
+            <!-- Aquí se podrían agregar más campos como dirección, método de pago, etc. -->
+            <button type="submit" class="btn btn-primary">Ir a pagar</button>
+        </form>
+    </div>
+
+    <footer class="bg-dark text-white text-center p-3 mt-5">
+        <p>&copy; 2024 Tumami Cafetería. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

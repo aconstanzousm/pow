@@ -33,6 +33,9 @@
                     </li>
                 </ul>
             </div>
+            <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#cartModal">
+                Ver Carrito
+            </button>
         </div>
     </nav>
 
@@ -65,7 +68,8 @@
                             <h5 class="card-title">Capuccino</h5>
                             <p class="card-text">Disfruta de nuestro capuccino cremoso, con una variedad de sabores para
                                 elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal">
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#myModal">
                                 Ordenar
                             </button>
                         </div>
@@ -79,7 +83,8 @@
                             <h5 class="card-title">Capuccino-Vainilla</h5>
                             <p class="card-text">Disfruta de nuestro capuccino con sabor a vainilla, con una variedad de
                                 sabores para elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal">
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#myModal">
                                 Ordenar
                             </button>
                         </div>
@@ -272,7 +277,10 @@
                 <!-- Modal body -->
                 <div class="modal-body">
                     <p>El <span id="product-name">producto</span> ha sido agregado a tu carrito de compras.</p>
-                    <a href="cart.html" class="btn btn-success">Ver Carrito</a>
+                    <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal"
+                        data-bs-target="#cartModal">
+                        Ver Carrito
+                    </button>
                 </div>
 
                 <!-- Modal footer -->
@@ -284,7 +292,66 @@
         </div>
     </div>
 
+    <!-- Modal de carrito simulado mostrando las cards de los productos seleccionados -->
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">Carrito de Compras</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Aquí se mostrarán las cards de los productos agregados al carrito -->
+                    <table class="table table-dark table-striped">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cart-items">
+                            <!-- Los productos del carrito se mostrarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                    <!-- Las cards de productos seleccionados se insertarán aquí dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Seguir Comprando</button>
+                    <button type="button" class="btn btn-primary" onclick="window.location.href='payment.html'">Proceder al Pago</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
 
+
+    <script>
+        // Simulación de productos en el carrito
+        const cartItems = [
+            { name: 'Capuccino', quantity: 2, price: 3.50 },
+            { name: 'Té Verde', quantity: 1, price: 2.00 },
+            { name: 'Ciabata Verde', quantity: 3, price: 4.00 }
+        ];
+
+        function renderCart() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            cartItemsContainer.innerHTML = '';
+
+            cartItems.forEach(item => {
+                const row = `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>$${item.price.toFixed(2)}</td>
+                    </tr>
+                `;
+                cartItemsContainer.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        // Renderizar el carrito al cargar la página
+        document.addEventListener('DOMContentLoaded', renderCart);
+    </script>
 </body>
-
 </html>
