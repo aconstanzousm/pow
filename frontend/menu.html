@@ -1,357 +1,139 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú de la Cafetería</title>
-    <!-- Latest compiled and minified CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Café Usm | Menú</title>
+    <link rel="stylesheet" href="menu.css">
 </head>
 
 <body>
+    <div class="background-overlay"></div>
 
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">Tumami Cafetería</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="mynavbar">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="menu.html">Menú</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="aboutus.html">Sobre nosotros</a>
-                    </li>
-                </ul>
-            </div>
-            <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#cartModal">
-                Ver Carrito
-            </button>
-        </div>
+    <nav class="glass-nav">
+        <div class="logo">CAFÉ<span>USM</span></div>
+        <ul class="nav-links">
+            <li><a href="../index/index.html">Inicio</a></li>
+            <li><a href="menu.html" class="active">Menú</a></li>
+            <li><a href="../index/index.html#contacto">Contacto</a></li>
+        </ul>
     </nav>
 
-    <!-- Carousel -->
-    <div id="demo" class="carousel slide" data-bs-ride="">
-        <!-- The slideshow/carousel -->
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="https://picsum.photos/id/684/600/400" alt="Menú de la Cafetería" class="d-block w-100"
-                    style="height: 400px;">
-                <div class="carousel-caption">
-                    <h3>MENÚ</h3>
-                    <p>Explora nuestra deliciosa selección de café de autor y comidas.</p>
-                </div>
+    <section class="promos-section">
+        <h2 class="section-title">Promos del <span>Mes</span></h2>
+        <div class="promos-grid">
+            <div class="promo-card">
+                <div class="promo-tag">Popular</div>
+                <h3>Combo Mañanero</h3>
+                <p>Café Latte + Croissant de Mantequilla</p>
+                <span class="price">$5.200</span>
+            </div>
+            <div class="promo-card highlight">
+                <div class="promo-tag">Especial</div>
+                <h3>Tarde de Té</h3>
+                <p>Tetera para dos + Porción de Tarta a elección</p>
+                <span class="price">$12.500</span>
+            </div>
+            <div class="promo-card">
+                <div class="promo-tag">Dulce</div>
+                <h3>Pack Macarons</h3>
+                <p>Caja de 6 unidades (Sabores surtidos)</p>
+                <span class="price">$8.900</span>
             </div>
         </div>
-    </div>
-    <!-- End of Carousel -->
+    </section>
 
-    <!--Menú de bebidas-->
-    <div class="container-fluid mt-5 pt-5 bg-dark">
-        <div class="container text-white">
-            <h1 class="text-center mb-4">EN TAZA</h1>
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" alt="Café" class="card-img-top"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Capuccino</h5>
-                            <p class="card-text">Disfruta de nuestro capuccino cremoso, con una variedad de sabores para
-                                elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
+    <section class="menu-category">
+        <div class="category-header">
+            <i class="icon">☕</i>
+            <h2>Nuestros <span>Cafés</span></h2>
+        </div>
+        <div class="items-grid">
+            <div class="item-card">
+                <div class="item-info">
+                    <h3>Espresso Doble</h3>
+                    <p>Extracción intensa de granos seleccionados.</p>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" alt="Café" class="card-img-top"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Capuccino-Vainilla</h5>
-                            <p class="card-text">Disfruta de nuestro capuccino con sabor a vainilla, con una variedad de
-                                sabores para elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
+                <span class="item-price">$2.200</span>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h3>Capuccino Premium</h3>
+                    <p>Espresso, leche y mucha espuma cremosa.</p>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" class="card-img-top" alt="Té"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Té</h5>
-                            <p class="card-text">Prueba nuestra selección de tés, desde clásicos hasta exóticos.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
+                <span class="item-price">$3.500</span>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h3>Flat White</h3>
+                    <p>Doble shot con microespuma sedosa.</p>
                 </div>
+                <span class="item-price">$3.800</span>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h3>Latte Botánico</h3>
+                    <p>Vainilla, lavanda y leche texturizada.</p>
+                </div>
+                <span class="item-price">$4.200</span>
             </div>
         </div>
-    </div>
-    <!--Menú de cosas para comer-->
-    <div class="container-fluid mt-5 pt-5 bg-dark">
-        <div class="container text-white">
-            <h1 class="text-center mb-4">PARA COMER</h1>
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" alt="Café" class="card-img-top"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Ciabata Verde</h5>
-                            <p class="card-text">Disfruta de nuestra ciabata verde, con una variedad de sabores para
-                                elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
+    </section>
+
+    <section class="menu-category">
+        <div class="category-header">
+            <i class="icon">🍰</i>
+            <h2>Dulces <span>Tentaciones</span></h2>
+        </div>
+        <div class="items-grid">
+            <div class="item-card">
+                <div class="item-info">
+                    <h3>Cheesecake Frambuesa</h3>
+                    <p>Base crocante y coulis de frutos rojos.</p>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" alt="Café" class="card-img-top"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Capuccino-Vainilla</h5>
-                            <p class="card-text">Disfruta de nuestro capuccino con sabor a vainilla, con una variedad de
-                                sabores para elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
+                <span class="item-price">$4.500</span>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h3>Brownie de Nuez</h3>
+                    <p>Chocolate amargo al 70% y nueces picadas.</p>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" class="card-img-top" alt="Té"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Té</h5>
-                            <p class="card-text">Prueba nuestra selección de tés, desde clásicos hasta exóticos.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
+                <span class="item-price">$3.200</span>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h3>Matcha & Limón</h3>
+                    <p>Nuestra tarta insignia de sabor cítrico.</p>
                 </div>
+                <span class="item-price">$4.800</span>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h3>Muffin de Arándanos</h3>
+                    <p>Esponjoso y cargado de fruta fresca.</p>
+                </div>
+                <span class="item-price">$2.800</span>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="container-fluid mt-5 pt-5 bg-dark">
-        <div class="container text-white">
-            <h1 class="text-center mb-4">POSTRES</h1>
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" alt="Café" class="card-img-top"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Ciabata Verde</h5>
-                            <p class="card-text">Disfruta de nuestra ciabata verde, con una variedad de sabores para
-                                elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" alt="Café" class="card-img-top"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Ciabata Verde</h5>
-                            <p class="card-text">Disfruta de nuestra ciabata verde, con una variedad de sabores para
-                                elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" alt="Café" class="card-img-top"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Ciabata Verde</h5>
-                            <p class="card-text">Disfruta de nuestra ciabata verde, con una variedad de sabores para
-                                elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" alt="Café" class="card-img-top"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Ciabata Verde</h5>
-                            <p class="card-text">Disfruta de nuestra ciabata verde, con una variedad de sabores para
-                                elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" alt="Café" class="card-img-top"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Ciabata Verde</h5>
-                            <p class="card-text">Disfruta de nuestra ciabata verde, con una variedad de sabores para
-                                elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card bg-secondary text-white">
-                        <img src="https://picsum.photos/id/684/600/400" alt="Café" class="card-img-top"
-                            style="height: 350px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Ciabata Verde</h5>
-                            <p class="card-text">Disfruta de nuestra ciabata verde, con una variedad de sabores para
-                                elegir.</p>
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#myModal">
-                                Ordenar
-                            </button>
-                        </div>
-                    </div>
-                </div>
+    <footer class="glass-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">CAFÉ<span>USM</span></div>
+                <p>Tu pausa perfecta del día.</p>
+            </div>
+            <div class="footer-info">
+                <h3>Contacto</h3>
+                <p>📱 WhatsApp: +56 9 1234 5678</p>
+                <p>📸 Instagram: @CafeUsm</p>
             </div>
         </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="bg-dark text-white text-center py-3">
-        <p>&copy; 2026 Cafetería. Todos los derechos reservados.</p>
-    </div>
-
-    <!-- The Modal -->
-    <div class="modal" id="myModal">
-        <div class="modal-dialog">
-            <div class="modal-content bg-dark text-white">
-
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Agregado al Carrito</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <!-- Modal body -->
-                <div class="modal-body">
-                    <p>El <span id="product-name">producto</span> ha sido agregado a tu carrito de compras.</p>
-                    <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal"
-                        data-bs-target="#cartModal">
-                        Ver Carrito
-                    </button>
-                </div>
-
-                <!-- Modal footer -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                </div>
-
-            </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Café Usm. Todos los derechos reservados.</p>
         </div>
-    </div>
-
-    <!-- Modal de carrito simulado mostrando las cards de los productos seleccionados -->
-    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content bg-dark text-white">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cartModalLabel">Carrito de Compras</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Aquí se mostrarán las cards de los productos agregados al carrito -->
-                    <table class="table table-dark table-striped">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cantidad</th>
-                                <th>Precio</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cart-items">
-                            <!-- Los productos del carrito se mostrarán aquí dinámicamente -->
-                        </tbody>
-                    </table>
-                    <!-- Las cards de productos seleccionados se insertarán aquí dinámicamente -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Seguir Comprando</button>
-                    <button type="button" class="btn btn-primary" onclick="window.location.href='payment.html'">Proceder al Pago</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-
-
-    <script>
-        // Simulación de productos en el carrito
-        const cartItems = [
-            { name: 'Capuccino', quantity: 2, price: 3.50 },
-            { name: 'Té Verde', quantity: 1, price: 2.00 },
-            { name: 'Ciabata Verde', quantity: 3, price: 4.00 }
-        ];
-
-        function renderCart() {
-            const cartItemsContainer = document.getElementById('cart-items');
-            cartItemsContainer.innerHTML = '';
-
-            cartItems.forEach(item => {
-                const row = `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.quantity}</td>
-                        <td>$${item.price.toFixed(2)}</td>
-                    </tr>
-                `;
-                cartItemsContainer.insertAdjacentHTML('beforeend', row);
-            });
-        }
-
-        // Renderizar el carrito al cargar la página
-        document.addEventListener('DOMContentLoaded', renderCart);
-    </script>
+    </footer>
 </body>
+
 </html>
