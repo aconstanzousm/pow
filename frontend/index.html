@@ -1,37 +1,178 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cafetería Tumami</title>
-
-  <!-- Latest compiled and minified CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Latest compiled JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Usm | Home</title>
+    <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
-  <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">Tumami Cafetería</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="mynavbar">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="menu.html">Menú</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="aboutus.html">Sobre nosotros</a>
-                    </li>
-                </ul>
+    <div class="background-overlay"></div>
+
+    <nav class="glass-nav">
+        <div class="logo">CAFÉ<span>USM</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Inicio</a></li>
+            <li><a href="../menu/menu.html">Menú</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main class="hero">
+        <div class="hero-text">
+            <h1>Sabor en cada <span>Entrega</span></h1>
+            <p>Tu cafetería online favorita en Concepción. Disfruta de bebidas de calidad, granos seleccionados y
+                repostería artesanal, directo a tu puerta.</p>
+            <div class="cta-group">
+                <a href="../menu/menu.html" class="btn-main">Pedir Ahora</a>
+                <a href="#nosotros" class="btn-outline">Conócenos</a>
             </div>
         </div>
-    </nav>
+    </main>
+
+    <section id="especialidades" class="specials-section">
+        <div class="section-header">
+            <h2>Nuestras <span>Especialidades</span></h2>
+            <p>Preparados con dedicación para cada cliente. Disfruta lo mejor de nuestra carta.</p>
+        </div>
+        <div class="specials-grid">
+            <div class="special-card">
+                <div class="special-img img-coffee"></div>
+                <h3>Latte Botánico</h3>
+                <p>Infusión de espresso con leche texturizada y un toque de lavanda.</p>
+            </div>
+            <div class="special-card">
+                <div class="special-img img-pastry"></div>
+                <h3>Macarons Franceses</h3>
+                <p>Rellenos de ganache de pistacho, frambuesa y chocolate blanco.</p>
+            </div>
+            <div class="special-card">
+                <div class="special-img img-matcha"></div>
+                <h3>Matcha & Limón</h3>
+                <p>Tarta fresca de matcha orgánico con un suave glaseado cítrico.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="nosotros" class="about-section">
+        <div class="about-grid">
+            <div class="about-image-container">
+                <div class="img-placeholder pastry-chef-img"></div>
+            </div>
+            <div class="about-text">
+                <h2>Sobre <span>Nosotros</span></h2>
+                <p>En <strong>Café Usm</strong> nos apasiona entregar momentos únicos a través del café. Nacimos con la
+                    idea de llevar la experiencia de una cafetería tradicional directamente a tu hogar o lugar de
+                    trabajo.</p>
+
+                <h3 class="sub-title">Nuestra Misión</h3>
+                <p>Crear una experiencia cálida y cercana, donde cada taza transmita comodidad, energía y buen sabor.
+                    Cuidamos cada detalle desde el tueste hasta el empaque.</p>
+
+                <h3 class="sub-title">Nuestra Visión</h3>
+                <p>Convertirnos en una de las cafeterías online favoritas de Chile, destacando por nuestra calidad,
+                    innovación y conexión con nuestra comunidad.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section">
+        <div class="section-header center">
+            <h2>¿Por qué <span>Elegirnos?</span></h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature-item">☕ Café de alta calidad y tueste fresco</div>
+            <div class="feature-item">🚀 Pedidos rápidos y seguros en Concepción</div>
+            <div class="feature-item">💬 Atención personalizada y asesoría</div>
+            <div class="feature-item">🍰 Variedad de bebidas y postres</div>
+            <div class="feature-item">🌱 Empaques ecológicos</div>
+            <div class="feature-item">✨ Calidad de nuestra cocina a tu mesa</div>
+        </div>
+    </section>
+
+    <section class="team-section">
+        <div class="section-header center">
+            <h2>Nuestro <span>Equipo</span></h2>
+            <p>Conoce a las personas apasionadas que hacen todo esto posible.</p>
+        </div>
+        <div class="specials-grid">
+            <div class="special-card">
+                <div class="special-img img-barista"></div>
+                <h3>Baristas</h3>
+                <p>Especialistas en preparar bebidas con ingredientes frescos y técnicas profesionales.</p>
+            </div>
+            <div class="special-card">
+                <div class="special-img img-pasteleros"></div>
+                <h3>Maestros Pasteleros</h3>
+                <p>Creadores de nuestras delicias dulces, horneando diariamente recetas exclusivas.</p>
+            </div>
+            <div class="special-card">
+                <div class="special-img img-tueste"></div>
+                <h3>Especialistas en Tueste</h3>
+                <p>Encargados de perfilar y tostar los granos para garantizar sabores únicos.</p>
+            </div>
+            <div class="special-card">
+                <div class="special-img img-atencion"></div>
+                <h3>Atención al Cliente</h3>
+                <p>Ayuda con pedidos, consultas y recomendaciones personalizadas.</p>
+            </div>
+            <div class="special-card">
+                <div class="special-img img-calidad"></div>
+                <h3>Control de Calidad</h3>
+                <p>Supervisan que cada producto cumpla con nuestros estándares.</p>
+            </div>
+            <div class="special-card">
+                <div class="special-img img-despacho"></div>
+                <h3>Área de Despacho</h3>
+                <p>Aseguran que cada pedido llegue en perfectas condiciones y a tiempo.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials-section">
+        <div class="section-header center">
+            <h2>Lo que <span>Dicen</span></h2>
+        </div>
+        <div class="testimoials-grid">
+            <div class="review-card">
+                <p>"La mejor tarta de limón que he pedido. Llegó en perfectas condiciones y el contraste con el café
+                    oscuro es perfecto."</p>
+                <h4>- Camila R.</h4>
+            </div>
+            <div class="review-card">
+                <p>"El despacho fue súper rápido y el café llegó caliente. Me encanta pedir aquí antes de empezar a
+                    trabajar."</p>
+                <h4>- Tomas J.</h4>
+            </div>
+            <div class="review-card">
+                <p>"Sus opciones veganas son increíbles y la atención por WhatsApp fue muy amable. 100% recomendados."
+                </p>
+                <h4>- Valentina S.</h4>
+            </div>
+        </div>
+    </section>
+
+    <footer class="glass-footer" id="contacto">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">CAFÉ<span>USM</span></div>
+                <p>Tu pausa perfecta del día, estés donde estés.</p>
+            </div>
+            <div class="footer-info">
+                <h3>Contacto y Ubicación</h3>
+                <p>📍 Centro de Preparación: Concepción, Chile.</p>
+                <p>🚚 Despachos a distintos sectores de la región.</p>
+                <p>📱 WhatsApp: +56 9 1234 5678</p>
+                <p>📸 Instagram: @CafeUsm</p>
+                <p>✉️ Correo: contacto@cafeusm.cl</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Café Usm. Todos los derechos reservados.</p>
+        </div>
+    </footer>
 </body>
+
 </html>
