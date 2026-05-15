@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Usm | Checkout</title>
+    <link rel="stylesheet" href="menu.css">
+    <style>
+        /* ── Checkout específico ── */
+        .checkout-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 7rem 5% 4rem;
+        }
+
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* Resumen del pedido */
+        .order-summary {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 2.5rem;
+        }
+
+        .order-summary h2 {
+            font-size: 1.6rem;
+            color: var(--color-1);
+            margin-bottom: 1.8rem;
+        }
+
+        .order-summary h2 span { color: var(--color-3); }
+
+        .summary-items { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 1.8rem; }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            background: rgba(255,255,255,0.5);
+            border-radius: 14px;
+            font-size: 0.9rem;
+        }
+
+        .summary-item-name { color: var(--color-1); font-weight: 600; }
+        .summary-item-qty { color: var(--text-muted); font-size: 0.8rem; }
+        .summary-item-price { color: var(--color-2); font-weight: 800; }
+
+        .summary-divider { border: none; border-top: 1px solid var(--glass-border); margin: 0.5rem 0; }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+        }
+
+        .summary-total span:first-child { font-weight: 700; color: var(--color-1); font-size: 1rem; }
+        .summary-total-price { font-size: 1.4rem; font-weight: 900; color: var(--color-1); }
+
+        .empty-order {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-muted);
+        }
+
+        /* Formulario */
+        .checkout-form-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.4rem;
+        }
+
+        .checkout-form-card h2 {
+            font-size: 1.6rem;
+            color: var(--color-1);
+            margin-bottom: 0.2rem;
+        }
+
+        .checkout-form-card h2 span { color: var(--color-3); }
+
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-2);
+        }
+
+        .form-group label .optional {
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-left: 4px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            background: rgba(255,255,255,0.6);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 0.9rem 1.2rem;
+            font-size: 0.95rem;
+            color: var(--color-1);
+            font-family: 'Inter', sans-serif;
+            transition: 0.3s;
+            outline: none;
+            resize: none;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(98, 78, 136, 0.4);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--color-3);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(203,128,171,0.15);
+        }
+
+        .form-group input.error,
+        .form-group textarea.error {
+            border-color: #e05c7a;
+        }
+
+        .error-msg {
+            font-size: 0.78rem;
+            color: #e05c7a;
+            font-weight: 600;
+            display: none;
+        }
+
+        .error-msg.visible { display: block; }
+
+        .btn-pay {
+            margin-top: 0.5rem;
+            background: var(--color-2);
+            color: #fff;
+            border: none;
+            border-radius: 16px;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .btn-pay:hover { background: var(--color-1); transform: translateY(-2px); }
+        .btn-pay:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--color-2);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: 0.2s;
+        }
+
+        .back-link:hover { color: var(--color-1); gap: 0.7rem; }
+
+        /* Pantalla de éxito */
+        .success-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 4rem 3rem;
+            grid-column: 1 / -1;
+            gap: 1rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .success-screen.active { display: flex; }
+
+        .success-icon { font-size: 4rem; margin-bottom: 0.5rem; }
+        .success-screen h2 { font-size: 2rem; color: var(--color-1); }
+        .success-screen h2 span { color: var(--color-3); }
+        .success-screen p { color: var(--text-muted); font-size: 1rem; max-width: 380px; }
+        .success-screen .btn-pay { margin-top: 1rem; text-decoration: none; display: inline-block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .checkout-container { grid-template-columns: 1fr; }
+            .checkout-wrapper { padding: 6rem 5% 3rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-overlay"></div>
+
+    <nav class="glass-nav">
+        <div class="logo">CAFÉ<span>USM</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="menu.html">Menú</a></li>
+            <li><a href="index.html#contacto">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main class="checkout-wrapper">
+        <div class="checkout-container" id="checkoutContainer">
+
+            <!-- Resumen del pedido -->
+            <div class="order-summary">
+                <h2>Tu <span>Pedido</span></h2>
+                <div class="summary-items" id="summaryItems">
+                    <p class="empty-order">No hay items en el carrito.</p>
+                </div>
+                <hr class="summary-divider">
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span class="summary-total-price" id="checkoutTotal">$0</span>
+                </div>
+            </div>
+
+            <!-- Formulario -->
+            <div class="checkout-form-card">
+                <a href="menu.html" class="back-link">← Volver al menú</a>
+                <h2>Tus <span>Datos</span></h2>
+
+                <div class="form-group">
+                    <label for="inputName">Nombre</label>
+                    <input type="text" id="inputName" placeholder="Tu nombre completo" autocomplete="name">
+                    <span class="error-msg" id="nameError">Por favor ingresa tu nombre.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail">Correo electrónico</label>
+                    <input type="email" id="inputEmail" placeholder="tu@correo.com" autocomplete="email">
+                    <span class="error-msg" id="emailError">Ingresa un correo válido.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputNote">Nota <span class="optional">(opcional)</span></label>
+                    <textarea id="inputNote" rows="3" placeholder="Alergias, preferencias, dedicatoria..."></textarea>
+                </div>
+
+                <button class="btn-pay" id="btnPay" onclick="submitOrder()">Confirmar Pedido ✓</button>
+            </div>
+
+            <!-- Pantalla de éxito (oculta al inicio) -->
+            <div class="success-screen" id="successScreen">
+                <div class="success-icon">☕</div>
+                <h2>¡Pedido <span>Recibido!</span></h2>
+                <p>Gracias por tu pedido. Pronto nos pondremos en contacto contigo para coordinar.</p>
+                <a href="menu.html" class="btn-pay">Volver al Menú</a>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="glass-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">CAFÉ<span>USM</span></div>
+                <p>Tu pausa perfecta del día.</p>
+            </div>
+            <div class="footer-info">
+                <h3>Contacto</h3>
+                <p>📱 WhatsApp: +56 9 1234 5678</p>
+                <p>📸 Instagram: @CafeUsm</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Café Usm. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        function formatPrice(n) {
+            return '$' + n.toLocaleString('es-CL');
+        }
+
+        // Cargar carrito desde sessionStorage
+        const raw = sessionStorage.getItem('cafeCart');
+        const cart = raw ? JSON.parse(raw) : [];
+
+        const summaryItems = document.getElementById('summaryItems');
+        const checkoutTotal = document.getElementById('checkoutTotal');
+
+        if (cart.length > 0) {
+            const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            summaryItems.innerHTML = cart.map(item => `
+                <div class="summary-item">
+                    <div>
+                        <div class="summary-item-name">${item.name}</div>
+                        <div class="summary-item-qty">x${item.qty}</div>
+                    </div>
+                    <span class="summary-item-price">${formatPrice(item.price * item.qty)}</span>
+                </div>
+            `).join('');
+            checkoutTotal.textContent = formatPrice(total);
+        }
+
+        function submitOrder() {
+            const name = document.getElementById('inputName');
+            const email = document.getElementById('inputEmail');
+            const nameErr = document.getElementById('nameError');
+            const emailErr = document.getElementById('emailError');
+
+            let valid = true;
+
+            // Resetear errores
+            [name, email].forEach(el => el.classList.remove('error'));
+            [nameErr, emailErr].forEach(el => el.classList.remove('visible'));
+
+            if (!name.value.trim()) {
+                name.classList.add('error');
+                nameErr.classList.add('visible');
+                valid = false;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email.value.trim())) {
+                email.classList.add('error');
+                emailErr.classList.add('visible');
+                valid = false;
+            }
+
+            if (!valid) return;
+
+            // Simular envío
+            const btn = document.getElementById('btnPay');
+            btn.disabled = true;
+            btn.textContent = 'Procesando...';
+
+            setTimeout(() => {
+                sessionStorage.removeItem('cafeCart');
+                document.getElementById('summaryItems').closest('.order-summary').style.display = 'none';
+                document.querySelector('.checkout-form-card').style.display = 'none';
+                document.getElementById('successScreen').classList.add('active');
+            }, 1200);
+        }
+    </script>
+</body>
+
+</html>

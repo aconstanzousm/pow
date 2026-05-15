@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Usm | Acceso Interno</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="login-body">
+    <div class="login-bg">
+        <div class="login-blob blob-1"></div>
+        <div class="login-blob blob-2"></div>
+        <div class="login-blob blob-3"></div>
+    </div>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-brand">
+                <div class="brand-logo">CAFÉ<span>USM</span></div>
+                <p class="brand-sub">Panel de Gestión Interna</p>
+            </div>
+
+            <div class="login-form">
+                <div class="form-field">
+                    <label>Usuario</label>
+                    <input type="text" id="loginUser" placeholder="tu.usuario" autocomplete="username">
+                    <span class="field-error" id="userErr">Usuario requerido.</span>
+                </div>
+                <div class="form-field">
+                    <label>Contraseña</label>
+                    <div class="input-wrap">
+                        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+                        <button class="toggle-pass" onclick="togglePass()" type="button" tabindex="-1">👁</button>
+                    </div>
+                    <span class="field-error" id="passErr">Contraseña requerida.</span>
+                </div>
+
+                <div class="login-error" id="loginError">Usuario o contraseña incorrectos.</div>
+
+                <button class="btn-login" onclick="doLogin()">Ingresar →</button>
+
+                <div class="login-hint">
+                    <strong>Demo:</strong> admin / admin123 &nbsp;|&nbsp; empleado / emp123
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Usuarios demo (en producción esto va en el backend)
+        const USERS = [
+            { username: 'admin',    password: 'admin123', role: 'admin',    name: 'Administrador' },
+            { username: 'empleado', password: 'emp123',   role: 'empleado', name: 'María González' },
+        ];
+
+        function togglePass() {
+            const inp = document.getElementById('loginPass');
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+        }
+
+        function doLogin() {
+            const u = document.getElementById('loginUser').value.trim();
+            const p = document.getElementById('loginPass').value;
+            const uErr = document.getElementById('userErr');
+            const pErr = document.getElementById('passErr');
+            const loginErr = document.getElementById('loginError');
+
+            let ok = true;
+            uErr.classList.remove('visible');
+            pErr.classList.remove('visible');
+            loginErr.classList.remove('visible');
+
+            if (!u) { uErr.classList.add('visible'); ok = false; }
+            if (!p) { pErr.classList.add('visible'); ok = false; }
+            if (!ok) return;
+
+            const user = USERS.find(x => x.username === u && x.password === p);
+            if (!user) { loginErr.classList.add('visible'); return; }
+
+            sessionStorage.setItem('cafeUser', JSON.stringify(user));
+            window.location.href = user.role === 'admin' ? 'admin-panel.html' : 'empleado-panel.html';
+        }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+        // Si ya hay sesión, redirigir
+        const sess = sessionStorage.getItem('cafeUser');
+        if (sess) {
+            const u = JSON.parse(sess);
+            window.location.href = u.role === 'admin' ? 'admin-panel.html' : 'empleado-panel.html';
+        }
+    </script>
+</body>
+</html>

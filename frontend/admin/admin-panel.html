@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Usm | Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="panel-body">
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">CAFÉ<span>USM</span></div>
+        <span class="role-badge admin-badge">Admin</span>
+    </div>
+
+    <nav class="sidebar-nav">
+        <button class="nav-item active" onclick="showSection('pedidos')">
+            <span class="nav-icon">📋</span> Pedidos
+        </button>
+        <button class="nav-item" onclick="showSection('productos')">
+            <span class="nav-icon">🍰</span> Productos
+        </button>
+        <button class="nav-item" onclick="showSection('usuarios')">
+            <span class="nav-icon">👥</span> Empleados
+        </button>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="user-chip" id="userChip"></div>
+        <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+</aside>
+
+<!-- Main -->
+<main class="panel-main">
+    <header class="panel-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <h1 class="panel-title" id="panelTitle">Pedidos</h1>
+        <div class="header-right" id="headerAction"></div>
+    </header>
+
+    <!-- ── SECCIÓN: PEDIDOS ── -->
+    <section class="section active" id="sec-pedidos">
+        <div class="cards-row">
+            <div class="stat-card">
+                <span class="stat-num" id="statPendiente">0</span>
+                <span class="stat-label">Pendientes</span>
+            </div>
+            <div class="stat-card accent">
+                <span class="stat-num" id="statPreparando">0</span>
+                <span class="stat-label">Preparando</span>
+            </div>
+            <div class="stat-card success">
+                <span class="stat-num" id="statListo">0</span>
+                <span class="stat-label">Listos hoy</span>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <div class="block-header">
+                <h2>Todos los Pedidos</h2>
+                <div class="filter-tabs">
+                    <button class="tab active" onclick="filterOrders('todos', this)">Todos</button>
+                    <button class="tab" onclick="filterOrders('pendiente', this)">Pendiente</button>
+                    <button class="tab" onclick="filterOrders('preparando', this)">Preparando</button>
+                    <button class="tab" onclick="filterOrders('listo', this)">Listo</button>
+                </div>
+            </div>
+            <div class="orders-list" id="ordersList"></div>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN: PRODUCTOS ── -->
+    <section class="section" id="sec-productos">
+        <div class="section-block">
+            <div class="block-header">
+                <h2>Gestión de Productos</h2>
+                <button class="btn-primary" onclick="openProductModal()">+ Nuevo Producto</button>
+            </div>
+            <div class="products-table-wrap">
+                <table class="data-table" id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECCIÓN: USUARIOS ── -->
+    <section class="section" id="sec-usuarios">
+        <div class="section-block">
+            <div class="block-header">
+                <h2>Empleados del Café</h2>
+                <button class="btn-primary" onclick="openUserModal()">+ Nuevo Empleado</button>
+            </div>
+            <div class="users-grid" id="usersGrid"></div>
+        </div>
+    </section>
+</main>
+
+<!-- Modal: Producto -->
+<div class="modal-overlay" id="productModal" onclick="handleModalClick(event,'productModal')">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3 id="productModalTitle">Nuevo Producto</h3>
+            <button class="modal-close" onclick="closeModal('productModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-field">
+                <label>Nombre</label>
+                <input type="text" id="pName" placeholder="Ej: Espresso Doble">
+            </div>
+            <div class="form-field">
+                <label>Descripción</label>
+                <input type="text" id="pDesc" placeholder="Breve descripción...">
+            </div>
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Precio ($)</label>
+                    <input type="number" id="pPrice" placeholder="3500" min="0">
+                </div>
+                <div class="form-field">
+                    <label>Categoría</label>
+                    <select id="pCat">
+                        <option value="Cafés">Cafés</option>
+                        <option value="Dulces">Dulces</option>
+                        <option value="Promos">Promos</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-field">
+                <label>Estado</label>
+                <select id="pStatus">
+                    <option value="activo">Activo</option>
+                    <option value="inactivo">Inactivo</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeModal('productModal')">Cancelar</button>
+            <button class="btn-primary" onclick="saveProduct()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Usuario -->
+<div class="modal-overlay" id="userModal" onclick="handleModalClick(event,'userModal')">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3 id="userModalTitle">Nuevo Empleado</h3>
+            <button class="modal-close" onclick="closeModal('userModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-field">
+                <label>Nombre completo</label>
+                <input type="text" id="uName" placeholder="Nombre Apellido">
+            </div>
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Usuario</label>
+                    <input type="text" id="uUser" placeholder="nombre.apellido">
+                </div>
+                <div class="form-field">
+                    <label>Contraseña</label>
+                    <input type="password" id="uPass" placeholder="••••••">
+                </div>
+            </div>
+            <div class="form-field">
+                <label>Correo</label>
+                <input type="email" id="uEmail" placeholder="correo@cafe.cl">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeModal('userModal')">Cancelar</button>
+            <button class="btn-primary" onclick="saveUser()">Crear Empleado</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirmar eliminación -->
+<div class="modal-overlay" id="confirmModal" onclick="handleModalClick(event,'confirmModal')">
+    <div class="modal-box small">
+        <div class="modal-head">
+            <h3>Confirmar eliminación</h3>
+            <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <p id="confirmMsg" style="color:var(--text-muted);font-size:0.95rem;"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeModal('confirmModal')">Cancelar</button>
+            <button class="btn-danger" id="confirmBtn">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Autenticación ──
+const sess = sessionStorage.getItem('cafeUser');
+if (!sess) { window.location.href = 'admin-login.html'; }
+const currentUser = JSON.parse(sess || '{}');
+if (currentUser.role !== 'admin') { window.location.href = 'admin-login.html'; }
+document.getElementById('userChip').textContent = `👤 ${currentUser.name}`;
+
+function logout() {
+    sessionStorage.removeItem('cafeUser');
+    window.location.href = 'admin-login.html';
+}
+
+// ── Estado de datos ──
+let products = JSON.parse(localStorage.getItem('cafe_products') || 'null') || [
+    { id: 1, name: 'Espresso Doble',       desc: 'Extracción intensa de granos seleccionados.', price: 2200, cat: 'Cafés',   status: 'activo' },
+    { id: 2, name: 'Capuccino Premium',    desc: 'Espresso, leche y mucha espuma cremosa.',     price: 3500, cat: 'Cafés',   status: 'activo' },
+    { id: 3, name: 'Flat White',           desc: 'Doble shot con microespuma sedosa.',          price: 3800, cat: 'Cafés',   status: 'activo' },
+    { id: 4, name: 'Latte Botánico',       desc: 'Vainilla, lavanda y leche texturizada.',      price: 4200, cat: 'Cafés',   status: 'activo' },
+    { id: 5, name: 'Cheesecake Frambuesa', desc: 'Base crocante y coulis de frutos rojos.',     price: 4500, cat: 'Dulces',  status: 'activo' },
+    { id: 6, name: 'Brownie de Nuez',      desc: 'Chocolate amargo al 70% y nueces picadas.',   price: 3200, cat: 'Dulces',  status: 'activo' },
+    { id: 7, name: 'Combo Mañanero',       desc: 'Café Latte + Croissant de Mantequilla.',      price: 5200, cat: 'Promos',  status: 'activo' },
+    { id: 8, name: 'Matcha & Limón',       desc: 'Nuestra tarta insignia de sabor cítrico.',    price: 4800, cat: 'Dulces',  status: 'inactivo' },
+];
+
+let employees = JSON.parse(localStorage.getItem('cafe_employees') || 'null') || [
+    { id: 1, name: 'María González', username: 'empleado', email: 'maria@cafe.cl', password: 'emp123' },
+    { id: 2, name: 'Carlos Muñoz',   username: 'carlos.m',  email: 'carlos@cafe.cl', password: 'emp456' },
+];
+
+let orders = JSON.parse(localStorage.getItem('cafe_orders') || 'null') || [
+    { id: 1001, client: 'Juan Pérez',    email: 'juan@mail.com',    note: '',                     items: [{name:'Espresso Doble', qty:2, price:2200},{name:'Brownie de Nuez',qty:1,price:3200}], status: 'pendiente',  employee: null,         time: '09:15' },
+    { id: 1002, client: 'Ana López',     email: 'ana@mail.com',     note: 'Sin lactosa por favor', items: [{name:'Latte Botánico', qty:1, price:4200}],                                         status: 'preparando', employee: 'María G.',   time: '09:32' },
+    { id: 1003, client: 'Pedro Soto',    email: 'pedro@mail.com',   note: '',                     items: [{name:'Combo Mañanero', qty:1, price:5200},{name:'Flat White',qty:1,price:3800}],   status: 'listo',      employee: 'Carlos M.',  time: '09:48' },
+    { id: 1004, client: 'Sofía Ramos',   email: 'sofia@mail.com',   note: 'Urgente',              items: [{name:'Capuccino Premium',qty:2,price:3500}],                                        status: 'pendiente',  employee: null,         time: '10:02' },
+];
+
+let productIdCounter = 9;
+let userIdCounter = 3;
+let editingProductId = null;
+
+function saveData() {
+    localStorage.setItem('cafe_products', JSON.stringify(products));
+    localStorage.setItem('cafe_employees', JSON.stringify(employees));
+    localStorage.setItem('cafe_orders', JSON.stringify(orders));
+}
+
+// ── Navegación ──
+function showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById('sec-' + name).classList.add('active');
+    document.querySelector(`[onclick="showSection('${name}')"]`).classList.add('active');
+    const titles = { pedidos:'Pedidos', productos:'Gestión de Productos', usuarios:'Empleados' };
+    document.getElementById('panelTitle').textContent = titles[name];
+
+    if (name === 'pedidos')   renderOrders('todos');
+    if (name === 'productos') renderProducts();
+    if (name === 'usuarios')  renderUsers();
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ── PEDIDOS ──
+let currentFilter = 'todos';
+
+function renderOrders(filter) {
+    currentFilter = filter;
+    const list = document.getElementById('ordersList');
+    const filtered = filter === 'todos' ? orders : orders.filter(o => o.status === filter);
+
+    document.getElementById('statPendiente').textContent  = orders.filter(o=>o.status==='pendiente').length;
+    document.getElementById('statPreparando').textContent = orders.filter(o=>o.status==='preparando').length;
+    document.getElementById('statListo').textContent      = orders.filter(o=>o.status==='listo').length;
+
+    if (!filtered.length) {
+        list.innerHTML = '<p class="empty-state">No hay pedidos en esta categoría.</p>';
+        return;
+    }
+
+    const statusLabel = { pendiente:'🟡 Pendiente', preparando:'🔵 Preparando', listo:'🟢 Listo' };
+    const statusClass = { pendiente:'badge-pending', preparando:'badge-prep', listo:'badge-done' };
+
+    list.innerHTML = filtered.map(o => {
+        const total = o.items.reduce((s,i) => s + i.price * i.qty, 0);
+        return `
+        <div class="order-card">
+            <div class="order-card-header">
+                <div>
+                    <span class="order-id">#${o.id}</span>
+                    <span class="order-time">${o.time}</span>
+                </div>
+                <span class="badge ${statusClass[o.status]}">${statusLabel[o.status]}</span>
+            </div>
+            <div class="order-client">
+                <strong>${o.client}</strong>
+                <span>${o.email}</span>
+                ${o.note ? `<span class="order-note">📝 ${o.note}</span>` : ''}
+            </div>
+            <div class="order-items">
+                ${o.items.map(i=>`<span class="order-item-chip">${i.name} ×${i.qty}</span>`).join('')}
+            </div>
+            <div class="order-footer">
+                <span class="order-total">$${total.toLocaleString('es-CL')}</span>
+                <div class="order-actions">
+                    ${o.status === 'pendiente'  ? `<button class="btn-action prep" onclick="updateOrderStatus(${o.id},'preparando')">Tomar pedido</button>` : ''}
+                    ${o.status === 'preparando' ? `<button class="btn-action done" onclick="updateOrderStatus(${o.id},'listo')">Marcar listo</button>` : ''}
+                    ${o.employee ? `<span class="order-emp">por ${o.employee}</span>` : ''}
+                    <button class="btn-action danger" onclick="deleteOrder(${o.id})">✕</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function filterOrders(filter, btn) {
+    document.querySelectorAll('.filter-tabs .tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderOrders(filter);
+}
+
+function updateOrderStatus(id, newStatus) {
+    const o = orders.find(x => x.id === id);
+    if (!o) return;
+    o.status = newStatus;
+    if (newStatus === 'preparando') o.employee = currentUser.name;
+    saveData();
+    renderOrders(currentFilter);
+    showToast('Pedido actualizado ✓');
+}
+
+function deleteOrder(id) {
+    confirmAction(`¿Eliminar pedido #${id}? Esta acción no se puede deshacer.`, () => {
+        orders = orders.filter(o => o.id !== id);
+        saveData();
+        renderOrders(currentFilter);
+        showToast('Pedido eliminado.');
+    });
+}
+
+// ── PRODUCTOS ──
+function renderProducts() {
+    const tbody = document.getElementById('productsBody');
+    tbody.innerHTML = products.map(p => `
+        <tr>
+            <td><strong>${p.name}</strong><br><small style="color:var(--text-muted)">${p.desc}</small></td>
+            <td><span class="cat-chip">${p.cat}</span></td>
+            <td>$${p.price.toLocaleString('es-CL')}</td>
+            <td><span class="badge ${p.status==='activo'?'badge-done':'badge-off'}">${p.status==='activo'?'✓ Activo':'✗ Inactivo'}</span></td>
+            <td class="action-cell">
+                <button class="btn-icon" onclick="editProduct(${p.id})">✏️</button>
+                <button class="btn-icon danger" onclick="deleteProduct(${p.id})">🗑️</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function openProductModal(id = null) {
+    editingProductId = id;
+    document.getElementById('productModalTitle').textContent = id ? 'Editar Producto' : 'Nuevo Producto';
+    if (id) {
+        const p = products.find(x => x.id === id);
+        document.getElementById('pName').value  = p.name;
+        document.getElementById('pDesc').value  = p.desc;
+        document.getElementById('pPrice').value = p.price;
+        document.getElementById('pCat').value   = p.cat;
+        document.getElementById('pStatus').value = p.status;
+    } else {
+        ['pName','pDesc','pPrice'].forEach(f => document.getElementById(f).value = '');
+        document.getElementById('pCat').value    = 'Cafés';
+        document.getElementById('pStatus').value = 'activo';
+    }
+    openModal('productModal');
+}
+
+function editProduct(id) { openProductModal(id); }
+
+function saveProduct() {
+    const name  = document.getElementById('pName').value.trim();
+    const desc  = document.getElementById('pDesc').value.trim();
+    const price = parseInt(document.getElementById('pPrice').value);
+    const cat   = document.getElementById('pCat').value;
+    const status = document.getElementById('pStatus').value;
+
+    if (!name || !price) { showToast('Completa los campos requeridos.'); return; }
+
+    if (editingProductId) {
+        const p = products.find(x => x.id === editingProductId);
+        Object.assign(p, { name, desc, price, cat, status });
+        showToast('Producto actualizado ✓');
+    } else {
+        products.push({ id: productIdCounter++, name, desc, price, cat, status });
+        showToast('Producto creado ✓');
+    }
+    saveData();
+    closeModal('productModal');
+    renderProducts();
+}
+
+function deleteProduct(id) {
+    const p = products.find(x => x.id === id);
+    confirmAction(`¿Eliminar "${p.name}"?`, () => {
+        products = products.filter(x => x.id !== id);
+        saveData();
+        renderProducts();
+        showToast('Producto eliminado.');
+    });
+}
+
+// ── USUARIOS ──
+function renderUsers() {
+    const grid = document.getElementById('usersGrid');
+    grid.innerHTML = employees.map(e => `
+        <div class="user-card">
+            <div class="user-avatar">${e.name.charAt(0)}</div>
+            <div class="user-info">
+                <strong>${e.name}</strong>
+                <span>@${e.username}</span>
+                <span class="user-email">${e.email}</span>
+            </div>
+            <div class="user-actions">
+                <button class="btn-icon danger" onclick="deleteEmployee(${e.id})">🗑️</button>
+            </div>
+        </div>
+    `).join('') || '<p class="empty-state">No hay empleados registrados.</p>';
+}
+
+function openUserModal() {
+    ['uName','uUser','uEmail','uPass'].forEach(f => document.getElementById(f).value = '');
+    openModal('userModal');
+}
+
+function saveUser() {
+    const name  = document.getElementById('uName').value.trim();
+    const uname = document.getElementById('uUser').value.trim();
+    const email = document.getElementById('uEmail').value.trim();
+    const pass  = document.getElementById('uPass').value;
+
+    if (!name || !uname || !email || !pass) { showToast('Completa todos los campos.'); return; }
+
+    employees.push({ id: userIdCounter++, name, username: uname, email, password: pass });
+    saveData();
+    closeModal('userModal');
+    renderUsers();
+    showToast('Empleado creado ✓');
+}
+
+function deleteEmployee(id) {
+    const e = employees.find(x => x.id === id);
+    confirmAction(`¿Eliminar al empleado "${e.name}"?`, () => {
+        employees = employees.filter(x => x.id !== id);
+        saveData();
+        renderUsers();
+        showToast('Empleado eliminado.');
+    });
+}
+
+// ── Modales ──
+function openModal(id)  { document.getElementById(id).classList.add('active'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow=''; }
+function handleModalClick(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
+let _confirmCb = null;
+function confirmAction(msg, cb) {
+    document.getElementById('confirmMsg').textContent = msg;
+    _confirmCb = cb;
+    openModal('confirmModal');
+}
+document.getElementById('confirmBtn').onclick = () => { if (_confirmCb) _confirmCb(); closeModal('confirmModal'); };
+
+// ── Toast ──
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ── Init ──
+renderOrders('todos');
+</script>
+</body>
+</html>
