@@ -1,3 +1,4 @@
+# backend/coreapp/serializers.py
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -37,9 +38,12 @@ class EmpleadoSerializer(serializers.ModelSerializer):
 
 
 class ProductoSerializer(serializers.ModelSerializer):
+    # imagen es un campo de archivo; puede ser null. Se retorna la URL absoluta.
+    imagen = serializers.ImageField(required=False, allow_null=True, use_url=True)
+
     class Meta:
         model = Producto
-        fields = ("id", "nombre", "descripcion", "precio", "categoria", "activo", "created_at", "updated_at")
+        fields = ("id", "nombre", "descripcion", "precio", "categoria", "activo", "imagen", "created_at", "updated_at")
 
 
 class PedidoItemSerializer(serializers.ModelSerializer):
@@ -153,4 +157,3 @@ class PedidoSerializer(serializers.ModelSerializer):
             instance.save(update_fields=["total"])
 
         return instance
-

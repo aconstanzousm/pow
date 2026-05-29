@@ -1,3 +1,4 @@
+# backend/coreapp/models.py
 from django.conf import settings
 from django.db import models
 
@@ -28,6 +29,8 @@ class Producto(models.Model):
     precio = models.PositiveIntegerField()
     categoria = models.CharField(max_length=60, blank=True)
     activo = models.BooleanField(default=True)
+    # Campo para la imagen del producto (opcional)
+    imagen = models.ImageField(upload_to="productos/", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -64,4 +67,3 @@ class PedidoItem(models.Model):
 
     def __str__(self) -> str:
         return f"{self.nombre} x{self.cantidad}"
-
