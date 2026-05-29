@@ -1,3 +1,4 @@
+# backend/config/negotiation.py
 from rest_framework.negotiation import DefaultContentNegotiation
 from rest_framework.renderers import JSONRenderer
 

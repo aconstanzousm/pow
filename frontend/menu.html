@@ -1,11 +1,40 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Café Usm | Menú </title>
-    <link rel="stylesheet" href="menu.css">
+    <title>Café Usm | Menú</title>
+    <link rel="stylesheet" href="{% static 'menu.css' %}">
+    <style>
+        /* Imagen cuadrada en tarjetas de ítems normales */
+        .item-card .product-img {
+            width: 72px;
+            height: 72px;
+            object-fit: cover;
+            border-radius: 10px;
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+        /* Para que el item-card soporte imagen a la izquierda cuando existe */
+        .item-card.has-img {
+            display: flex;
+            align-items: center;
+        }
+        .item-card.has-img .item-info {
+            flex: 1;
+        }
+        /* Imagen cuadrada en promos */
+        .promo-card .promo-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
@@ -23,145 +52,14 @@
         </button>
     </nav>
 
-    <section class="promos-section">
+    <!-- Promos (categoría "Promos" de la API) -->
+    <section class="promos-section" id="promos-section" style="display:none">
         <h2 class="section-title">Promos del <span>Mes</span></h2>
-        <div class="promos-grid">
-            <div class="promo-card" onclick="addToCart('Combo Mañanero', 5200)" role="button" tabindex="0">
-                <div class="promo-tag">Popular</div>
-                <h3>Combo Mañanero</h3>
-                <p>Café Latte + Croissant de Mantequilla</p>
-                <div class="card-footer">
-                    <span class="price">$5.200</span>
-                    <span class="add-hint">+ Agregar</span>
-                </div>
-            </div>
-            <div class="promo-card highlight" onclick="addToCart('Tarde de Té', 12500)" role="button" tabindex="0">
-                <div class="promo-tag">Especial</div>
-                <h3>Tarde de Té</h3>
-                <p>Tetera para dos + Porción de Tarta a elección</p>
-                <div class="card-footer">
-                    <span class="price">$12.500</span>
-                    <span class="add-hint">+ Agregar</span>
-                </div>
-            </div>
-            <div class="promo-card" onclick="addToCart('Pack Macarons', 8900)" role="button" tabindex="0">
-                <div class="promo-tag">Dulce</div>
-                <h3>Pack Macarons</h3>
-                <p>Caja de 6 unidades (Sabores surtidos)</p>
-                <div class="card-footer">
-                    <span class="price">$8.900</span>
-                    <span class="add-hint">+ Agregar</span>
-                </div>
-            </div>
-            <div class="promo-card" onclick="addToCart('Pack Macarons', 8900)" role="button" tabindex="0">
-                <div class="promo-tag">Dulce</div>
-                <h3>Pack Macarons</h3>
-                <p>Caja de 6 unidades (Sabores surtidos)</p>
-                <div class="card-footer">
-                    <span class="price">$8.900</span>
-                    <span class="add-hint">+ Agregar</span>
-                </div>
-            </div>
-        </div>
+        <div class="promos-grid" id="promos-grid"></div>
     </section>
 
-    <section class="menu-category">
-        <div class="category-header">
-            <i class="icon">☕</i>
-            <h2>Nuestros <span>Cafés</span></h2>
-        </div>
-        <div class="items-grid">
-            <div class="item-card" onclick="addToCart('Espresso Doble', 2200)" role="button" tabindex="0">
-                <div class="item-info">
-                    <h3>Espresso Doble</h3>
-                    <p>Extracción intensa de granos seleccionados.</p>
-                </div>
-                <div class="item-right">
-                    <span class="item-price">$2.200</span>
-                    <span class="item-add">+</span>
-                </div>
-            </div>
-            <div class="item-card" onclick="addToCart('Capuccino Premium', 3500)" role="button" tabindex="0">
-                <div class="item-info">
-                    <h3>Capuccino Premium</h3>
-                    <p>Espresso, leche y mucha espuma cremosa.</p>
-                </div>
-                <div class="item-right">
-                    <span class="item-price">$3.500</span>
-                    <span class="item-add">+</span>
-                </div>
-            </div>
-            <div class="item-card" onclick="addToCart('Flat White', 3800)" role="button" tabindex="0">
-                <div class="item-info">
-                    <h3>Flat White</h3>
-                    <p>Doble shot con microespuma sedosa.</p>
-                </div>
-                <div class="item-right">
-                    <span class="item-price">$3.800</span>
-                    <span class="item-add">+</span>
-                </div>
-            </div>
-            <div class="item-card" onclick="addToCart('Latte Botánico', 4200)" role="button" tabindex="0">
-                <div class="item-info">
-                    <h3>Latte Botánico</h3>
-                    <p>Vainilla, lavanda y leche texturizada.</p>
-                </div>
-                <div class="item-right">
-                    <span class="item-price">$4.200</span>
-                    <span class="item-add">+</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="menu-category">
-        <div class="category-header">
-            <i class="icon">🍰</i>
-            <h2>Dulces <span>Tentaciones</span></h2>
-        </div>
-        <div class="items-grid">
-            <div class="item-card" onclick="addToCart('Cheesecake Frambuesa', 4500)" role="button" tabindex="0">
-                <div class="item-info">
-                    <h3>Cheesecake Frambuesa</h3>
-                    <p>Base crocante y coulis de frutos rojos.</p>
-                </div>
-                <div class="item-right">
-                    <span class="item-price">$4.500</span>
-                    <span class="item-add">+</span>
-                </div>
-            </div>
-            <div class="item-card" onclick="addToCart('Brownie de Nuez', 3200)" role="button" tabindex="0">
-                <div class="item-info">
-                    <h3>Brownie de Nuez</h3>
-                    <p>Chocolate amargo al 70% y nueces picadas.</p>
-                </div>
-                <div class="item-right">
-                    <span class="item-price">$3.200</span>
-                    <span class="item-add">+</span>
-                </div>
-            </div>
-            <div class="item-card" onclick="addToCart('Matcha & Limón', 4800)" role="button" tabindex="0">
-                <div class="item-info">
-                    <h3>Matcha & Limón</h3>
-                    <p>Nuestra tarta insignia de sabor cítrico.</p>
-                </div>
-                <div class="item-right">
-                    <span class="item-price">$4.800</span>
-                    <span class="item-add">+</span>
-                </div>
-            </div>
-            <div class="item-card" onclick="addToCart('Muffin de Arándanos', 2800)" role="button" tabindex="0">
-                <div class="item-info">
-                    <h3>Muffin de Arándanos</h3>
-                    <p>Esponjoso y cargado de fruta fresca.</p>
-                </div>
-                <div class="item-right">
-                    <span class="item-price">$2.800</span>
-                    <span class="item-add">+</span>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Secciones de categorías normales (Cafés, Dulces, Otros…) -->
+    <div id="cat-sections"></div>
 
     <footer class="glass-footer">
         <div class="footer-grid">
@@ -210,37 +108,34 @@
         </div>
     </div>
 
-    <!-- Toast de confirmación -->
+    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
     <script>
+        const API_BASE = 'http://localhost:8000';
         let cart = [];
 
-        function formatPrice(n) {
-            return '$' + n.toLocaleString('es-CL');
-        }
+        // ── Carrito ──
+        function formatPrice(n) { return '$' + n.toLocaleString('es-CL'); }
 
-        function addToCart(name, price) {
-            const existing = cart.find(i => i.name === name);
-            if (existing) {
-                existing.qty++;
-            } else {
-                cart.push({ name, price, qty: 1 });
-            }
+        function addToCart(id, name, price) {
+            const existing = cart.find(i => i.id === id);
+            if (existing) { existing.qty++; }
+            else { cart.push({ id, name, price, qty: 1 }); }
             updateCartUI();
             showToast(`${name} agregado ✓`);
         }
 
-        function removeItem(name) {
-            cart = cart.filter(i => i.name !== name);
+        function removeItem(id) {
+            cart = cart.filter(i => i.id !== id);
             updateCartUI();
         }
 
-        function changeQty(name, delta) {
-            const item = cart.find(i => i.name === name);
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
             if (!item) return;
             item.qty += delta;
-            if (item.qty <= 0) cart = cart.filter(i => i.name !== name);
+            if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
             updateCartUI();
         }
 
@@ -248,12 +143,12 @@
             const count = cart.reduce((s, i) => s + i.qty, 0);
             document.getElementById('cartCount').textContent = count;
 
-            const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-            const itemsEl = document.getElementById('cartItems');
-            const emptyEl = document.getElementById('cartEmpty');
+            const total     = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const itemsEl   = document.getElementById('cartItems');
+            const emptyEl   = document.getElementById('cartEmpty');
             const summaryEl = document.getElementById('cartSummary');
 
-            if (cart.length === 0) {
+            if (!cart.length) {
                 emptyEl.style.display = 'flex';
                 summaryEl.style.display = 'none';
                 itemsEl.innerHTML = '';
@@ -270,32 +165,22 @@
                         <span class="cart-item-unit">${formatPrice(item.price)} c/u</span>
                     </div>
                     <div class="cart-item-controls">
-                        <button class="qty-btn" onclick="changeQty('${item.name}', -1)">−</button>
+                        <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
                         <span class="qty-num">${item.qty}</span>
-                        <button class="qty-btn" onclick="changeQty('${item.name}', 1)">+</button>
+                        <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
                         <span class="cart-item-subtotal">${formatPrice(item.price * item.qty)}</span>
-                        <button class="remove-btn" onclick="removeItem('${item.name}')">✕</button>
+                        <button class="remove-btn" onclick="removeItem(${item.id})">✕</button>
                     </div>
                 </div>
             `).join('');
 
             document.getElementById('cartSubtotal').textContent = formatPrice(total);
-            document.getElementById('cartTotal').textContent = formatPrice(total);
+            document.getElementById('cartTotal').textContent    = formatPrice(total);
         }
 
-        function openCart() {
-            document.getElementById('cartModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeCart() {
-            document.getElementById('cartModal').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        function handleOverlayClick(e) {
-            if (e.target === document.getElementById('cartModal')) closeCart();
-        }
+        function openCart()  { document.getElementById('cartModal').classList.add('active');    document.body.style.overflow = 'hidden'; }
+        function closeCart() { document.getElementById('cartModal').classList.remove('active'); document.body.style.overflow = ''; }
+        function handleOverlayClick(e) { if (e.target === document.getElementById('cartModal')) closeCart(); }
 
         function showToast(msg) {
             const t = document.getElementById('toast');
@@ -305,17 +190,96 @@
         }
 
         function goToCheckout() {
-            // Guardar carrito en sessionStorage para la página de checkout
             sessionStorage.setItem('cafeCart', JSON.stringify(cart));
             window.location.href = 'checkout.html';
         }
 
-        // Teclado: Enter en las tarjetas
-        document.querySelectorAll('[role="button"]').forEach(el => {
-            el.addEventListener('keydown', e => {
-                if (e.key === 'Enter') el.click();
-            });
-        });
+        // ── Carga dinámica del menú ──
+        const CAT_ICONS  = { 'Cafés': '☕', 'Dulces': '🍰', 'Promos': '🎁', 'Otros': '🍽️' };
+        const CAT_TITLES = { 'Cafés': 'Nuestros <span>Cafés</span>', 'Dulces': 'Dulces <span>Tentaciones</span>' };
+
+        function escQ(s) { return (s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+
+        async function loadMenuProducts() {
+            try {
+                const res  = await fetch(`${API_BASE}/productos/`);
+                if (!res.ok) throw new Error(res.status);
+                const data = await res.json();
+
+                const activos = data.filter(p => p.activo);
+
+                // ── Promos ──
+                const promos = activos.filter(p => p.categoria === 'Promos');
+                if (promos.length) {
+                    document.getElementById('promos-section').style.display = '';
+                    document.getElementById('promos-grid').innerHTML = promos.map(p => `
+                        <div class="promo-card" onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio})" role="button" tabindex="0">
+                            ${p.imagen ? `<img class="promo-img" src="${p.imagen}" alt="${escQ(p.nombre)}">` : ''}
+                            <div class="promo-tag">Promo</div>
+                            <h3>${p.nombre}</h3>
+                            <p>${p.descripcion || ''}</p>
+                            <div class="card-footer">
+                                <span class="price">$${p.precio.toLocaleString('es-CL')}</span>
+                                <span class="add-hint">+ Agregar</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // ── Categorías normales: Cafés primero, Dulces segundo, resto en orden ──
+                const otherCats = [...new Set(
+                    activos
+                        .filter(p => p.categoria !== 'Promos')
+                        .map(p => p.categoria || 'Otros')
+                )];
+
+                const priority = ['Cafés', 'Dulces'];
+                const ordered  = [
+                    ...priority.filter(c => otherCats.includes(c)),
+                    ...otherCats.filter(c => !priority.includes(c)),
+                ];
+
+                document.getElementById('cat-sections').innerHTML = ordered.map(cat => {
+                    const items = activos.filter(p => (p.categoria || 'Otros') === cat);
+                    const icon  = CAT_ICONS[cat]  || '🍽️';
+                    const title = CAT_TITLES[cat]  || cat;
+                    return `
+                    <section class="menu-category">
+                        <div class="category-header">
+                            <i class="icon">${icon}</i>
+                            <h2>${title}</h2>
+                        </div>
+                        <div class="items-grid">
+                            ${items.map(p => `
+                            <div class="item-card${p.imagen ? ' has-img' : ''}"
+                                 onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio})"
+                                 role="button" tabindex="0">
+                                ${p.imagen ? `<img class="product-img" src="${p.imagen}" alt="${escQ(p.nombre)}">` : ''}
+                                <div class="item-info">
+                                    <h3>${p.nombre}</h3>
+                                    <p>${p.descripcion || ''}</p>
+                                </div>
+                                <div class="item-right">
+                                    <span class="item-price">$${p.precio.toLocaleString('es-CL')}</span>
+                                    <span class="item-add">+</span>
+                                </div>
+                            </div>`).join('')}
+                        </div>
+                    </section>`;
+                }).join('');
+
+                document.querySelectorAll('[role="button"]').forEach(el => {
+                    el.addEventListener('keydown', e => { if (e.key === 'Enter') el.click(); });
+                });
+
+            } catch (e) {
+                console.error('Error cargando menú:', e);
+                document.getElementById('cat-sections').innerHTML =
+                    '<p style="text-align:center;padding:3rem 1rem;opacity:0.5;">No se pudo cargar el menú. Intenta recargando la página.</p>';
+            }
+        }
+
+        loadMenuProducts();
     </script>
 </body>
 
