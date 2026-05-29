@@ -1,7 +1,7 @@
+# backend/coreapp/admin.py
 from django.contrib import admin
 
 from .models import Empleado, Pedido, PedidoItem, Producto
-
 
 class PedidoItemInline(admin.TabularInline):
     model = PedidoItem
