@@ -1,3 +1,4 @@
+# backend/config/cors.py
 from django.http import HttpRequest, HttpResponse
 
 
@@ -27,7 +28,14 @@ class SimpleCorsMiddleware:
             "http://localhost:5174",
             "http://127.0.0.1:5174",
         }
-        response["Access-Control-Allow-Origin"] = origin if origin in allowed else "null"
+        
+        # Allow localhost origins or if origin is null
+        if origin in allowed or origin == "null" or "localhost" in origin or "127.0.0.1" in origin:
+            response["Access-Control-Allow-Origin"] = origin if origin else "*"
+        else:
+            response["Access-Control-Allow-Origin"] = "null"
+            
         response["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
         response["Access-Control-Allow-Headers"] = requested_headers or "Authorization, Content-Type, Accept"
         response["Access-Control-Max-Age"] = "600"
+        response["Access-Control-Allow-Credentials"] = "true"
