@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Usm | Empleado</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="panel-body">
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">CAFÉ<span>USM</span></div>
+        <span class="role-badge emp-badge">Empleado</span>
+    </div>
+
+    <nav class="sidebar-nav">
+        <button class="nav-item active" onclick="showSection('cola')">
+            <span class="nav-icon">📋</span> Cola de Pedidos
+        </button>
+        <button class="nav-item" onclick="showSection('nuevo')">
+            <span class="nav-icon">➕</span> Nuevo Pedido
+        </button>
+        <button class="nav-item" onclick="showSection('historial')">
+            <span class="nav-icon">✅</span> Historial
+        </button>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="user-chip" id="userChip"></div>
+        <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+</aside>
+
+<main class="panel-main">
+    <header class="panel-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <h1 class="panel-title" id="panelTitle">Cola de Pedidos</h1>
+        <div class="header-right"></div>
+    </header>
+
+    <!-- ── Cola de pedidos ── -->
+    <section class="section active" id="sec-cola">
+        <div class="cards-row">
+            <div class="stat-card">
+                <span class="stat-num" id="empPendiente">0</span>
+                <span class="stat-label">Por atender</span>
+            </div>
+            <div class="stat-card accent">
+                <span class="stat-num" id="empPreparando">0</span>
+                <span class="stat-label">En proceso</span>
+            </div>
+            <div class="stat-card success">
+                <span class="stat-num" id="empListo">0</span>
+                <span class="stat-label">Completados</span>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <div class="block-header">
+                <h2>Pedidos Activos</h2>
+                <div class="filter-tabs">
+                    <button class="tab active" onclick="filterEmpOrders('activos', this)">Activos</button>
+                    <button class="tab" onclick="filterEmpOrders('pendiente', this)">Pendiente</button>
+                    <button class="tab" onclick="filterEmpOrders('preparando', this)">Preparando</button>
+                </div>
+            </div>
+            <div class="orders-list" id="empOrdersList"></div>
+        </div>
+    </section>
+
+    <!-- ── Nuevo Pedido ── -->
+    <section class="section" id="sec-nuevo">
+        <div class="section-block" style="max-width:680px">
+            <div class="block-header">
+                <h2>Registrar Pedido Manual</h2>
+            </div>
+
+            <div class="new-order-form">
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Nombre del cliente</label>
+                        <input type="text" id="nClient" placeholder="Nombre completo">
+                    </div>
+                    <div class="form-field">
+                        <label>Correo <span class="optional">(opcional)</span></label>
+                        <input type="email" id="nEmail" placeholder="correo@mail.com">
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label>Nota <span class="optional">(opcional)</span></label>
+                    <input type="text" id="nNote" placeholder="Alergias, preferencias...">
+                </div>
+
+                <div class="form-field">
+                    <label>Agregar productos</label>
+                    <div class="product-picker" id="productPicker"></div>
+                </div>
+
+                <div class="selected-items" id="selectedItems">
+                    <p class="empty-state" style="padding:1rem 0">Ningún producto seleccionado.</p>
+                </div>
+
+                <div class="new-order-total">
+                    Total: <strong id="newOrderTotal">$0</strong>
+                </div>
+
+                <button class="btn-primary full-width" onclick="submitNewOrder()">Registrar Pedido</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Historial ── -->
+    <section class="section" id="sec-historial">
+        <div class="section-block">
+            <div class="block-header">
+                <h2>Pedidos Completados</h2>
+            </div>
+            <div class="orders-list" id="historialList"></div>
+        </div>
+    </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'http://localhost:8000';
+const token = localStorage.getItem('cafeAuth');
+const role = localStorage.getItem('cafeRole');
+const username = localStorage.getItem('cafeUser') || '';
+if (!token || role !== 'empleado') { window.location.href = 'admin-login.html'; }
+document.getElementById('userChip').textContent = `👤 ${username}`;
+
+function logout() {
+    localStorage.removeItem('cafeAuth');
+    localStorage.removeItem('cafeRole');
+    localStorage.removeItem('cafeUser');
+    window.location.href = 'admin-login.html';
+}
+
+async function apiFetch(path, options = {}) {
+    const method = (options.method || 'GET').toUpperCase();
+    const headers = {
+        'Accept': 'application/json',
+        'Authorization': `Basic ${token}`,
+        ...(options.headers || {})
+    };
+    if (options.body !== undefined) headers['Content-Type'] = 'application/json';
+
+    const res = await fetch(API_BASE + path, { ...options, method, headers });
+    if (res.status === 401) {
+        logout();
+        return null;
+    }
+    const text = await res.text();
+    const data = text ? JSON.parse(text) : null;
+    if (!res.ok) throw new Error((data && JSON.stringify(data)) || `Error ${res.status}`);
+    return data;
+}
+
+function formatTime(iso) {
+    try {
+        const d = new Date(iso);
+        return d.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+        return '';
+    }
+}
+
+let orders = [];
+let products = [];
+let newOrderItems = [];
+let empFilter = 'activos';
+
+function mapOrder(o) {
+    return {
+        id: o.id,
+        client: o.cliente_nombre || '—',
+        email: o.cliente_email || '—',
+        note: o.nota || '',
+        items: (o.items || []).map(i => ({ id: i.producto_id, name: i.nombre, qty: i.cantidad, price: i.precio })),
+        status: o.estado,
+        employee: o.empleado_nombre || null,
+        time: formatTime(o.created_at),
+    };
+}
+
+function mapProduct(p) {
+    return {
+        id: p.id,
+        name: p.nombre,
+        price: p.precio,
+        cat: p.categoria || 'Otros',
+        status: p.activo ? 'activo' : 'inactivo',
+    };
+}
+
+async function loadOrders() {
+    const data = await apiFetch('/pedidos/');
+    orders = Array.isArray(data) ? data.map(mapOrder) : [];
+}
+
+async function loadProducts() {
+    const data = await apiFetch('/productos/');
+    products = Array.isArray(data) ? data.map(mapProduct) : [];
+}
+
+// ── Navegación ──
+async function showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById('sec-' + name).classList.add('active');
+    document.querySelector(`[onclick="showSection('${name}')"]`).classList.add('active');
+    const titles = { cola:'Cola de Pedidos', nuevo:'Nuevo Pedido', historial:'Historial' };
+    document.getElementById('panelTitle').textContent = titles[name];
+
+    try {
+        if (name === 'cola')     { await loadOrders(); renderEmpOrders(empFilter); }
+        if (name === 'nuevo')    { await loadProducts(); buildProductPicker(); }
+        if (name === 'historial') { await loadOrders(); renderHistorial(); }
+    } catch (e) {
+        showToast('No pude cargar datos.');
+    }
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+// ── Cola de pedidos ──
+function renderEmpOrders(filter) {
+    empFilter = filter;
+    const activos = orders.filter(o => o.status !== 'listo');
+    const filtered = filter === 'activos' ? activos : activos.filter(o => o.status === filter);
+
+    document.getElementById('empPendiente').textContent  = orders.filter(o=>o.status==='pendiente').length;
+    document.getElementById('empPreparando').textContent = orders.filter(o=>o.status==='preparando').length;
+    document.getElementById('empListo').textContent      = orders.filter(o=>o.status==='listo').length;
+
+    const list = document.getElementById('empOrdersList');
+    if (!filtered.length) {
+        list.innerHTML = '<p class="empty-state">No hay pedidos activos.</p>';
+        return;
+    }
+
+    const statusLabel = { pendiente:'🟡 Pendiente', preparando:'🔵 Preparando', listo:'🟢 Listo' };
+    const statusClass = { pendiente:'badge-pending', preparando:'badge-prep', listo:'badge-done' };
+
+    list.innerHTML = filtered.map(o => {
+        const total = o.items.reduce((s,i) => s + i.price * i.qty, 0);
+        return `
+        <div class="order-card">
+            <div class="order-card-header">
+                <div>
+                    <span class="order-id">#${o.id}</span>
+                    <span class="order-time">${o.time}</span>
+                </div>
+                <span class="badge ${statusClass[o.status]}">${statusLabel[o.status]}</span>
+            </div>
+            <div class="order-client">
+                <strong>${o.client}</strong>
+                ${o.note ? `<span class="order-note">📝 ${o.note}</span>` : ''}
+            </div>
+            <div class="order-items">
+                ${o.items.map(i=>`<span class="order-item-chip">${i.name} ×${i.qty}</span>`).join('')}
+            </div>
+            <div class="order-footer">
+                <span class="order-total">$${total.toLocaleString('es-CL')}</span>
+                <div class="order-actions">
+                    ${o.status === 'pendiente'  ? `<button class="btn-action prep" onclick="empUpdateStatus(${o.id},'preparando')">Tomar pedido</button>` : ''}
+                    ${o.status === 'preparando' ? `<button class="btn-action done" onclick="empUpdateStatus(${o.id},'listo')">Marcar listo</button>` : ''}
+                    ${o.employee ? `<span class="order-emp">por ${o.employee}</span>` : ''}
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function filterEmpOrders(filter, btn) {
+    document.querySelectorAll('.filter-tabs .tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderEmpOrders(filter);
+}
+
+function empUpdateStatus(id, newStatus) {
+    apiFetch(`/pedidos/${id}/`, { method: 'PATCH', body: JSON.stringify({ estado: newStatus }) })
+        .then(async () => {
+            await loadOrders();
+            renderEmpOrders(empFilter);
+            showToast(newStatus === 'preparando' ? 'Pedido tomado ✓' : '¡Pedido listo! ✓');
+        })
+        .catch(() => showToast('No pude actualizar el pedido.'));
+}
+
+// ── Nuevo Pedido ──
+function buildProductPicker() {
+    newOrderItems = [];
+    renderSelectedItems();
+    const prods = products.filter(p => p.status === 'activo');
+    const cats = [...new Set(prods.map(p => p.cat))];
+    const picker = document.getElementById('productPicker');
+
+    picker.innerHTML = cats.map(cat => `
+        <div class="picker-cat">
+            <div class="picker-cat-label">${cat}</div>
+            <div class="picker-items">
+                ${prods.filter(p=>p.cat===cat).map(p=>`
+                    <button class="picker-item" onclick="addPickerItem(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.price})">
+                        <span>${p.name}</span>
+                        <span class="picker-price">$${p.price.toLocaleString('es-CL')}</span>
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+function addPickerItem(id, name, price) {
+    const existing = newOrderItems.find(i => i.id === id);
+    if (existing) { existing.qty++; }
+    else { newOrderItems.push({ id, name, price, qty: 1 }); }
+    renderSelectedItems();
+}
+
+function removePickerItem(id) {
+    newOrderItems = newOrderItems.filter(i => i.id !== id);
+    renderSelectedItems();
+}
+
+function changePickerQty(id, delta) {
+    const item = newOrderItems.find(i => i.id === id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) newOrderItems = newOrderItems.filter(i => i.id !== id);
+    renderSelectedItems();
+}
+
+function renderSelectedItems() {
+    const el = document.getElementById('selectedItems');
+    const total = newOrderItems.reduce((s,i) => s + i.price * i.qty, 0);
+    document.getElementById('newOrderTotal').textContent = '$' + total.toLocaleString('es-CL');
+
+    if (!newOrderItems.length) {
+        el.innerHTML = '<p class="empty-state" style="padding:1rem 0">Ningún producto seleccionado.</p>';
+        return;
+    }
+
+    el.innerHTML = `<div class="selected-list">${newOrderItems.map(i=>`
+        <div class="selected-row">
+            <span class="sel-name">${i.name}</span>
+            <div class="cart-item-controls">
+                <button class="qty-btn" onclick="changePickerQty(${i.id},-1)">−</button>
+                <span class="qty-num">${i.qty}</span>
+                <button class="qty-btn" onclick="changePickerQty(${i.id},1)">+</button>
+                <span class="sel-sub">$${(i.price*i.qty).toLocaleString('es-CL')}</span>
+                <button class="remove-btn" onclick="removePickerItem(${i.id})">✕</button>
+            </div>
+        </div>
+    `).join('')}</div>`;
+}
+
+function submitNewOrder() {
+    const client = document.getElementById('nClient').value.trim();
+    if (!client) { showToast('Ingresa el nombre del cliente.'); return; }
+    if (!newOrderItems.length) { showToast('Agrega al menos un producto.'); return; }
+
+    const payload = {
+        cliente_nombre: client,
+        cliente_email: document.getElementById('nEmail').value.trim(),
+        nota: document.getElementById('nNote').value.trim(),
+        estado: 'preparando',
+        items: newOrderItems.map(i => ({ producto_id: i.id, cantidad: i.qty }))
+    };
+
+    apiFetch('/pedidos/', { method: 'POST', body: JSON.stringify(payload) })
+        .then(async () => {
+            showToast('Pedido registrado ✓');
+            newOrderItems = [];
+            document.getElementById('nClient').value = '';
+            document.getElementById('nEmail').value  = '';
+            document.getElementById('nNote').value   = '';
+            await loadProducts();
+            buildProductPicker();
+        })
+        .catch(() => showToast('No pude registrar el pedido.'));
+}
+
+// ── Historial ──
+function renderHistorial() {
+    const done = orders.filter(o => o.status === 'listo').reverse();
+    const list = document.getElementById('historialList');
+    if (!done.length) { list.innerHTML = '<p class="empty-state">Aún no hay pedidos completados.</p>'; return; }
+
+    list.innerHTML = done.map(o => {
+        const total = o.items.reduce((s,i) => s + i.price * i.qty, 0);
+        return `
+        <div class="order-card done-card">
+            <div class="order-card-header">
+                <div><span class="order-id">#${o.id}</span><span class="order-time">${o.time}</span></div>
+                <span class="badge badge-done">🟢 Listo</span>
+            </div>
+            <div class="order-client"><strong>${o.client}</strong></div>
+            <div class="order-items">${o.items.map(i=>`<span class="order-item-chip">${i.name} ×${i.qty}</span>`).join('')}</div>
+            <div class="order-footer">
+                <span class="order-total">$${total.toLocaleString('es-CL')}</span>
+                ${o.employee ? `<span class="order-emp">por ${o.employee}</span>` : ''}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ── Toast ──
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ── Init ──
+(async () => {
+    try {
+        await loadOrders();
+        renderEmpOrders('activos');
+        setInterval(async () => {
+            const sec = document.getElementById('sec-cola');
+            if (!sec || !sec.classList.contains('active')) return;
+            await loadOrders();
+            renderEmpOrders(empFilter || 'activos');
+        }, 2500);
+    } catch (e) {
+        showToast('No pude cargar pedidos.');
+    }
+})();
+</script>
+</body>
+</html>
