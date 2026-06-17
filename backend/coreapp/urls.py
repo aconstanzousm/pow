@@ -16,6 +16,8 @@ from .views import (
     AdminPanelView,
     EmpleadoPanelView,
     login_view,
+    cafe_status_view,
+    estadisticas_view,
 )
 
 
@@ -40,6 +42,8 @@ urlpatterns = [
     path("admin-login/", AdminLoginView.as_view(), name="admin-login"),
     path("admin-panel/", AdminPanelView.as_view(), name="admin-panel"),
     path("empleado-panel/", EmpleadoPanelView.as_view(), name="empleado-panel"),
+    path("cafe-status/", cafe_status_view, name="cafe-status"),
+    path("estadisticas/", estadisticas_view, name="estadisticas"),
 
     # Páginas frontend — URLs con .html (para links directos en el HTML)
     path("index.html", IndexView.as_view(), name="index-html"),
