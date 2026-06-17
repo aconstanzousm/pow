@@ -12,7 +12,6 @@
         rel="stylesheet">
     <link rel="stylesheet" href="{% static 'admin/admin.css' %}">
     <style>
-        /* Estilos extra para preview de imagen y input file */
         .img-preview-wrap {
             margin-top: 8px;
             display: none;
@@ -20,19 +19,17 @@
             width: 100%;
             max-width: 240px;
         }
-
         .img-preview-wrap img {
             width: 100%;
             border-radius: 8px;
             object-fit: cover;
             max-height: 140px;
         }
-
         .img-preview-wrap .remove-img {
             position: absolute;
             top: 4px;
             right: 4px;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0,0,0,0.55);
             color: #fff;
             border: none;
             border-radius: 50%;
@@ -43,12 +40,7 @@
             line-height: 22px;
             text-align: center;
         }
-
-        input[type="file"] {
-            font-size: 0.875rem;
-            color: var(--text-muted, #888);
-        }
-
+        input[type="file"] { font-size: 0.875rem; color: var(--text-muted, #888); }
         .product-img-thumb {
             width: 36px;
             height: 36px;
@@ -56,6 +48,163 @@
             border-radius: 6px;
             vertical-align: middle;
             margin-right: 6px;
+        }
+
+        /* NUEVO: Toggle cafetería */
+        .cafe-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .cafe-toggle-label {
+            color: var(--text-muted, #888);
+        }
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            cursor: pointer;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-track {
+            position: absolute;
+            inset: 0;
+            background: #ccc;
+            border-radius: 26px;
+            transition: background 0.25s;
+        }
+        .toggle-track::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.25s;
+        }
+        .toggle-switch input:checked + .toggle-track { background: #22c55e; }
+        .toggle-switch input:checked + .toggle-track::after { transform: translateX(22px); }
+        .cafe-status-text { font-weight: 600; min-width: 56px; }
+        .cafe-status-text.open { color: #22c55e; }
+        .cafe-status-text.closed { color: #ef4444; }
+
+        /* NUEVO: Estadísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-block {
+            background: var(--surface, #fff);
+            border: 1px solid var(--border, #e5e7eb);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .stat-block .stat-title {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted, #888);
+            margin-bottom: 6px;
+        }
+        .stat-block .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text, #111);
+        }
+        .stat-block .stat-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted, #888);
+            margin-top: 2px;
+        }
+        .periodo-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        .periodo-tabs .tab {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border, #e5e7eb);
+            background: transparent;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-muted, #888);
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+        .periodo-tabs .tab.active {
+            background: var(--primary, #6b4f3a);
+            color: #fff;
+            border-color: var(--primary, #6b4f3a);
+        }
+        .chart-wrap {
+            background: var(--surface, #fff);
+            border: 1px solid var(--border, #e5e7eb);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .chart-wrap h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text, #111);
+        }
+        canvas#ingresosChart {
+            width: 100% !important;
+            max-height: 200px;
+        }
+        .ranking-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 640px) { .ranking-grid { grid-template-columns: 1fr; } }
+        .ranking-block {
+            background: var(--surface, #fff);
+            border: 1px solid var(--border, #e5e7eb);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .ranking-block h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border, #f3f4f6);
+            font-size: 0.875rem;
+        }
+        .ranking-item:last-child { border-bottom: none; }
+        .ranking-pos {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary, #6b4f3a);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        .ranking-name { flex: 1; color: var(--text, #111); }
+        .ranking-qty {
+            font-weight: 600;
+            color: var(--text-muted, #888);
+            font-size: 0.8rem;
         }
     </style>
 </head>
@@ -79,6 +228,10 @@
             <button class="nav-item" onclick="showSection('usuarios')">
                 <span class="nav-icon">👥</span> Empleados
             </button>
+            <!-- NUEVO -->
+            <button class="nav-item" onclick="showSection('estadisticas')">
+                <span class="nav-icon">📊</span> Estadísticas
+            </button>
         </nav>
 
         <div class="sidebar-footer">
@@ -92,10 +245,20 @@
         <header class="panel-header">
             <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
             <h1 class="panel-title" id="panelTitle">Pedidos</h1>
-            <div class="header-right" id="headerAction"></div>
+            <!-- NUEVO: Toggle abierto/cerrado -->
+            <div class="header-right" id="headerAction">
+                <div class="cafe-toggle">
+                    <span class="cafe-toggle-label">Cafetería</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cafeToggle" onchange="toggleCafe(this.checked)">
+                        <span class="toggle-track"></span>
+                    </label>
+                    <span class="cafe-status-text closed" id="cafeStatusText">Cerrada</span>
+                </div>
+            </div>
         </header>
 
-        <!-- ── SECCIÓN: PEDIDOS ── -->
+        <!-- SECCIÓN: PEDIDOS (sin cambios) -->
         <section class="section active" id="sec-pedidos">
             <div class="cards-row">
                 <div class="stat-card">
@@ -111,7 +274,6 @@
                     <span class="stat-label">Listos hoy</span>
                 </div>
             </div>
-
             <div class="section-block">
                 <div class="block-header">
                     <h2>Todos los Pedidos</h2>
@@ -126,7 +288,7 @@
             </div>
         </section>
 
-        <!-- ── SECCIÓN: PRODUCTOS ── -->
+        <!-- SECCIÓN: PRODUCTOS (sin cambios) -->
         <section class="section" id="sec-productos">
             <div class="section-block">
                 <div class="block-header">
@@ -150,7 +312,7 @@
             </div>
         </section>
 
-        <!-- ── SECCIÓN: USUARIOS ── -->
+        <!-- SECCIÓN: USUARIOS (sin cambios) -->
         <section class="section" id="sec-usuarios">
             <div class="section-block">
                 <div class="block-header">
@@ -160,9 +322,32 @@
                 <div class="users-grid" id="usersGrid"></div>
             </div>
         </section>
+
+        <!-- NUEVO: SECCIÓN ESTADÍSTICAS -->
+        <section class="section" id="sec-estadisticas">
+            <div class="stats-grid" id="statsGrid">
+                <!-- Se rellena con JS -->
+            </div>
+
+            <div class="chart-wrap">
+                <h3>Ingresos últimos 7 días</h3>
+                <canvas id="ingresosChart" height="200"></canvas>
+            </div>
+
+            <div class="ranking-grid">
+                <div class="ranking-block">
+                    <h3>🏆 Más vendidos</h3>
+                    <div id="masVendidosList"></div>
+                </div>
+                <div class="ranking-block">
+                    <h3>📉 Menos vendidos</h3>
+                    <div id="menosVendidosList"></div>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Modal: Producto -->
+    <!-- Modales: sin cambios -->
     <div class="modal-overlay" id="productModal" onclick="handleModalClick(event,'productModal')">
         <div class="modal-box">
             <div class="modal-head">
@@ -200,9 +385,8 @@
                         <option value="inactivo">Inactivo</option>
                     </select>
                 </div>
-                <!-- Campo imagen -->
                 <div class="form-field">
-                    <label>Imagen <span class="optional" style="font-size:0.8rem;color:#999">(opcional)</span></label>
+                    <label>Imagen <span style="font-size:0.8rem;color:#999">(opcional)</span></label>
                     <input type="file" id="pImage" accept="image/*">
                     <div class="img-preview-wrap" id="imgPreviewWrap">
                         <img id="pImagePreview" src="" alt="Preview">
@@ -217,7 +401,6 @@
         </div>
     </div>
 
-    <!-- Modal: Usuario -->
     <div class="modal-overlay" id="userModal" onclick="handleModalClick(event,'userModal')">
         <div class="modal-box">
             <div class="modal-head">
@@ -251,7 +434,6 @@
         </div>
     </div>
 
-    <!-- Modal: Confirmar eliminación -->
     <div class="modal-overlay" id="confirmModal" onclick="handleModalClick(event,'confirmModal')">
         <div class="modal-box small">
             <div class="modal-head">
@@ -285,7 +467,6 @@
             window.location.href = 'admin-login.html';
         }
 
-        // ── apiFetch: para endpoints JSON (GET, DELETE, PATCH sin archivos) ──
         async function apiFetch(path, options = {}) {
             const method = (options.method || 'GET').toUpperCase();
             const headers = {
@@ -296,7 +477,6 @@
             if (options.body !== undefined && typeof options.body === 'string') {
                 headers['Content-Type'] = 'application/json';
             }
-
             const res = await fetch(API_BASE + path, { ...options, method, headers });
             if (res.status === 401) { logout(); return null; }
             const text = await res.text();
@@ -305,14 +485,12 @@
             return data;
         }
 
-        // ── apiFetchForm: para multipart/form-data (crear/editar producto con imagen) ──
         async function apiFetchForm(path, method, formData) {
             const res = await fetch(API_BASE + path, {
                 method,
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Basic ${token}`,
-                    // No ponemos Content-Type — el browser lo pone automáticamente con el boundary correcto
                 },
                 body: formData,
             });
@@ -330,11 +508,9 @@
             } catch (e) { return ''; }
         }
 
-        let products = [];
-        let employees = [];
-        let orders = [];
+        let products = [], employees = [], orders = [];
         let editingProductId = null;
-        let clearExistingImage = false; // bandera para borrar imagen existente
+        let clearExistingImage = false;
 
         function mapOrder(o) {
             return {
@@ -357,7 +533,7 @@
                 price: p.precio,
                 cat: p.categoria || 'Otros',
                 status: p.activo ? 'activo' : 'inactivo',
-                imagen: p.imagen || null,   // URL absoluta devuelta por el serializer
+                imagen: p.imagen || null,
             };
         }
 
@@ -374,25 +550,62 @@
         async function loadProducts() { const d = await apiFetch('/productos/'); products = Array.isArray(d) ? d.map(mapProduct) : []; }
         async function loadEmployees() { const d = await apiFetch('/empleados/'); employees = Array.isArray(d) ? d.map(mapEmployee) : []; }
 
+        // ── NUEVO: Estado del café ──
+        async function loadCafeStatus() {
+            try {
+                const data = await fetch(API_BASE + '/cafe-status/').then(r => r.json());
+                setCafeUI(data.abierto);
+            } catch (e) { /* silencioso */ }
+        }
+
+        function setCafeUI(abierto) {
+            const toggle = document.getElementById('cafeToggle');
+            const text = document.getElementById('cafeStatusText');
+            toggle.checked = abierto;
+            text.textContent = abierto ? 'Abierta' : 'Cerrada';
+            text.className = 'cafe-status-text ' + (abierto ? 'open' : 'closed');
+        }
+
+        async function toggleCafe(abierto) {
+            try {
+                await apiFetch('/cafe-status/', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ abierto }),
+                });
+                setCafeUI(abierto);
+                showToast(abierto ? '✅ Cafetería abierta' : '🔴 Cafetería cerrada');
+            } catch (e) {
+                showToast('No pude cambiar el estado.');
+                // Revertir el toggle visualmente
+                loadCafeStatus();
+            }
+        }
+
         // ── Navegación ──
         async function showSection(name) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             document.getElementById('sec-' + name).classList.add('active');
             document.querySelector(`[onclick="showSection('${name}')"]`).classList.add('active');
-            const titles = { pedidos: 'Pedidos', productos: 'Gestión de Productos', usuarios: 'Empleados' };
-            document.getElementById('panelTitle').textContent = titles[name];
+            const titles = {
+                pedidos: 'Pedidos',
+                productos: 'Gestión de Productos',
+                usuarios: 'Empleados',
+                estadisticas: 'Estadísticas',  // NUEVO
+            };
+            document.getElementById('panelTitle').textContent = titles[name] || name;
 
             try {
                 if (name === 'pedidos') { await loadOrders(); renderOrders(currentFilter); }
                 if (name === 'productos') { await loadProducts(); renderProducts(); }
                 if (name === 'usuarios') { await loadEmployees(); renderUsers(); }
+                if (name === 'estadisticas') { await loadEstadisticas(); } // NUEVO
             } catch (e) { showToast('No pude cargar datos.'); }
         }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // ── PEDIDOS ──
+        // ── PEDIDOS (sin cambios) ──
         let currentFilter = 'todos';
 
         function renderOrders(filter) {
@@ -415,32 +628,32 @@
             list.innerHTML = filtered.map(o => {
                 const total = o.items.reduce((s, i) => s + i.price * i.qty, 0);
                 return `
-        <div class="order-card">
-            <div class="order-card-header">
-                <div>
-                    <span class="order-id">#${o.id}</span>
-                    <span class="order-time">${o.time}</span>
-                </div>
-                <span class="badge ${statusClass[o.status]}">${statusLabel[o.status]}</span>
-            </div>
-            <div class="order-client">
-                <strong>${o.client}</strong>
-                <span>${o.email}</span>
-                ${o.note ? `<span class="order-note">📝 ${o.note}</span>` : ''}
-            </div>
-            <div class="order-items">
-                ${o.items.map(i => `<span class="order-item-chip">${i.name} ×${i.qty}</span>`).join('')}
-            </div>
-            <div class="order-footer">
-                <span class="order-total">$${total.toLocaleString('es-CL')}</span>
-                <div class="order-actions">
-                    ${o.status === 'pendiente' ? `<button class="btn-action prep" onclick="updateOrderStatus(${o.id},'preparando')">Tomar pedido</button>` : ''}
-                    ${o.status === 'preparando' ? `<button class="btn-action done" onclick="updateOrderStatus(${o.id},'listo')">Marcar listo</button>` : ''}
-                    ${o.employee ? `<span class="order-emp">por ${o.employee}</span>` : ''}
-                    <button class="btn-action danger" onclick="deleteOrder(${o.id})">✕</button>
-                </div>
-            </div>
-        </div>`;
+                <div class="order-card">
+                    <div class="order-card-header">
+                        <div>
+                            <span class="order-id">#${o.id}</span>
+                            <span class="order-time">${o.time}</span>
+                        </div>
+                        <span class="badge ${statusClass[o.status]}">${statusLabel[o.status]}</span>
+                    </div>
+                    <div class="order-client">
+                        <strong>${o.client}</strong>
+                        <span>${o.email}</span>
+                        ${o.note ? `<span class="order-note">📝 ${o.note}</span>` : ''}
+                    </div>
+                    <div class="order-items">
+                        ${o.items.map(i => `<span class="order-item-chip">${i.name} ×${i.qty}</span>`).join('')}
+                    </div>
+                    <div class="order-footer">
+                        <span class="order-total">$${total.toLocaleString('es-CL')}</span>
+                        <div class="order-actions">
+                            ${o.status === 'pendiente' ? `<button class="btn-action prep" onclick="updateOrderStatus(${o.id},'preparando')">Tomar pedido</button>` : ''}
+                            ${o.status === 'preparando' ? `<button class="btn-action done" onclick="updateOrderStatus(${o.id},'listo')">Marcar listo</button>` : ''}
+                            ${o.employee ? `<span class="order-emp">por ${o.employee}</span>` : ''}
+                            <button class="btn-action danger" onclick="deleteOrder(${o.id})">✕</button>
+                        </div>
+                    </div>
+                </div>`;
             }).join('');
         }
 
@@ -464,25 +677,25 @@
             });
         }
 
-        // ── PRODUCTOS ──
+        // ── PRODUCTOS (sin cambios) ──
         function renderProducts() {
             const tbody = document.getElementById('productsBody');
             tbody.innerHTML = products.map(p => `
-        <tr>
-            <td>
-                ${p.imagen ? `<img src="${p.imagen}" class="product-img-thumb" alt="${p.name}">` : ''}
-                <strong>${p.name}</strong><br>
-                <small style="color:var(--text-muted)">${p.desc}</small>
-            </td>
-            <td><span class="cat-chip">${p.cat}</span></td>
-            <td>$${p.price.toLocaleString('es-CL')}</td>
-            <td><span class="badge ${p.status === 'activo' ? 'badge-done' : 'badge-off'}">${p.status === 'activo' ? '✓ Activo' : '✗ Inactivo'}</span></td>
-            <td class="action-cell">
-                <button class="btn-icon" onclick="editProduct(${p.id})">✏️</button>
-                <button class="btn-icon danger" onclick="deleteProduct(${p.id})">🗑️</button>
-            </td>
-        </tr>
-    `).join('');
+            <tr>
+                <td>
+                    ${p.imagen ? `<img src="${p.imagen}" class="product-img-thumb" alt="${p.name}">` : ''}
+                    <strong>${p.name}</strong><br>
+                    <small style="color:var(--text-muted)">${p.desc}</small>
+                </td>
+                <td><span class="cat-chip">${p.cat}</span></td>
+                <td>$${p.price.toLocaleString('es-CL')}</td>
+                <td><span class="badge ${p.status === 'activo' ? 'badge-done' : 'badge-off'}">${p.status === 'activo' ? '✓ Activo' : '✗ Inactivo'}</span></td>
+                <td class="action-cell">
+                    <button class="btn-icon" onclick="editProduct(${p.id})">✏️</button>
+                    <button class="btn-icon danger" onclick="deleteProduct(${p.id})">🗑️</button>
+                </td>
+            </tr>
+            `).join('');
         }
 
         function clearImageInput() {
@@ -507,7 +720,6 @@
             clearExistingImage = false;
             document.getElementById('productModalTitle').textContent = id ? 'Editar Producto' : 'Nuevo Producto';
             document.getElementById('pImage').value = '';
-
             const preview = document.getElementById('pImagePreview');
             const wrap = document.getElementById('imgPreviewWrap');
 
@@ -518,20 +730,13 @@
                 document.getElementById('pPrice').value = p.price;
                 document.getElementById('pCat').value = p.cat;
                 document.getElementById('pStatus').value = p.status;
-
-                if (p.imagen) {
-                    preview.src = p.imagen;
-                    wrap.style.display = 'block';
-                } else {
-                    preview.src = '';
-                    wrap.style.display = 'none';
-                }
+                if (p.imagen) { preview.src = p.imagen; wrap.style.display = 'block'; }
+                else { preview.src = ''; wrap.style.display = 'none'; }
             } else {
                 ['pName', 'pDesc', 'pPrice'].forEach(f => document.getElementById(f).value = '');
                 document.getElementById('pCat').value = 'Cafés';
                 document.getElementById('pStatus').value = 'activo';
-                preview.src = '';
-                wrap.style.display = 'none';
+                preview.src = ''; wrap.style.display = 'none';
             }
             openModal('productModal');
         }
@@ -548,7 +753,6 @@
 
             if (!name || !price) { showToast('Completa los campos requeridos.'); return; }
 
-            // Usamos FormData para poder enviar la imagen junto con los demás campos
             const formData = new FormData();
             formData.append('nombre', name);
             formData.append('descripcion', desc);
@@ -556,14 +760,8 @@
             formData.append('categoria', cat);
             formData.append('activo', status === 'activo' ? 'true' : 'false');
 
-            if (imgFile) {
-                // El usuario seleccionó una imagen nueva
-                formData.append('imagen', imgFile);
-            } else if (clearExistingImage) {
-                // El usuario borró la imagen manualmente: enviar campo vacío
-                formData.append('imagen', '');
-            }
-            // Si no hay imgFile ni clearExistingImage, no se toca la imagen existente
+            if (imgFile) { formData.append('imagen', imgFile); }
+            else if (clearExistingImage) { formData.append('imagen', ''); }
 
             const path = editingProductId ? `/productos/${editingProductId}/` : '/productos/';
             const method = editingProductId ? 'PATCH' : 'POST';
@@ -571,8 +769,7 @@
             apiFetchForm(path, method, formData)
                 .then(async () => {
                     closeModal('productModal');
-                    await loadProducts();
-                    renderProducts();
+                    await loadProducts(); renderProducts();
                     showToast(editingProductId ? 'Producto actualizado ✓' : 'Producto creado ✓');
                 })
                 .catch(err => showToast('No pude guardar el producto: ' + err.message));
@@ -587,22 +784,22 @@
             });
         }
 
-        // ── USUARIOS ──
+        // ── USUARIOS (sin cambios) ──
         function renderUsers() {
             const grid = document.getElementById('usersGrid');
             grid.innerHTML = employees.map(e => `
-        <div class="user-card">
-            <div class="user-avatar">${e.name.charAt(0)}</div>
-            <div class="user-info">
-                <strong>${e.name}</strong>
-                <span>@${e.username}</span>
-                <span class="user-email">${e.email}</span>
+            <div class="user-card">
+                <div class="user-avatar">${e.name.charAt(0)}</div>
+                <div class="user-info">
+                    <strong>${e.name}</strong>
+                    <span>@${e.username}</span>
+                    <span class="user-email">${e.email}</span>
+                </div>
+                <div class="user-actions">
+                    <button class="btn-icon danger" onclick="deleteEmployee(${e.id})">🗑️</button>
+                </div>
             </div>
-            <div class="user-actions">
-                <button class="btn-icon danger" onclick="deleteEmployee(${e.id})">🗑️</button>
-            </div>
-        </div>
-    `).join('') || '<p class="empty-state">No hay empleados registrados.</p>';
+            `).join('') || '<p class="empty-state">No hay empleados registrados.</p>';
         }
 
         function openUserModal() {
@@ -615,20 +812,16 @@
             const uname = document.getElementById('uUser').value.trim();
             const email = document.getElementById('uEmail').value.trim();
             const pass = document.getElementById('uPass').value;
-
             if (!name || !uname || !email || !pass) { showToast('Completa todos los campos.'); return; }
-
             const parts = name.split(' ').filter(Boolean);
             const nombre = parts.shift() || name;
             const apellido = parts.join(' ') || '-';
-
             apiFetch('/empleados/', {
                 method: 'POST',
                 body: JSON.stringify({ nombre, apellido, email, telefono: '', activo: true, username: uname, password: pass })
             }).then(async () => {
                 closeModal('userModal');
-                await loadEmployees();
-                renderUsers();
+                await loadEmployees(); renderUsers();
                 showToast('Empleado creado ✓');
             }).catch(() => showToast('No pude crear el empleado.'));
         }
@@ -639,6 +832,139 @@
                 apiFetch(`/empleados/${id}/`, { method: 'DELETE' })
                     .then(async () => { await loadEmployees(); renderUsers(); showToast('Empleado eliminado.'); })
                     .catch(() => showToast('No pude eliminar el empleado.'));
+            });
+        }
+
+        // ── NUEVO: ESTADÍSTICAS ──
+        let chartData = null;
+
+        async function loadEstadisticas() {
+            try {
+                const data = await apiFetch('/estadisticas/');
+                chartData = data;
+                renderEstadisticas(data);
+            } catch (e) {
+                showToast('No pude cargar estadísticas.');
+            }
+        }
+
+        function renderEstadisticas(data) {
+            // Cards de resumen
+            const grid = document.getElementById('statsGrid');
+            grid.innerHTML = `
+                <div class="stat-block">
+                    <div class="stat-title">Ingresos hoy</div>
+                    <div class="stat-value">$${data.ingresos.hoy.toLocaleString('es-CL')}</div>
+                    <div class="stat-sub">${data.pedidos.hoy} pedidos</div>
+                </div>
+                <div class="stat-block">
+                    <div class="stat-title">Ingresos esta semana</div>
+                    <div class="stat-value">$${data.ingresos.semana.toLocaleString('es-CL')}</div>
+                    <div class="stat-sub">${data.pedidos.semana} pedidos</div>
+                </div>
+                <div class="stat-block">
+                    <div class="stat-title">Ingresos este mes</div>
+                    <div class="stat-value">$${data.ingresos.mes.toLocaleString('es-CL')}</div>
+                    <div class="stat-sub">${data.pedidos.mes} pedidos</div>
+                </div>
+            `;
+
+            // Gráfico de barras (canvas puro, sin librerías)
+            drawBarChart(data.ingresos_por_dia);
+
+            // Rankings
+            const masEl = document.getElementById('masVendidosList');
+            const menosEl = document.getElementById('menosVendidosList');
+
+            masEl.innerHTML = data.productos.mas_vendidos.length
+                ? data.productos.mas_vendidos.map((p, i) => `
+                    <div class="ranking-item">
+                        <span class="ranking-pos">${i + 1}</span>
+                        <span class="ranking-name">${p.nombre}</span>
+                        <span class="ranking-qty">${p.total_vendido} uds.</span>
+                    </div>`).join('')
+                : '<p class="empty-state" style="font-size:0.85rem">Sin datos aún.</p>';
+
+            menosEl.innerHTML = data.productos.menos_vendidos.length
+                ? data.productos.menos_vendidos.map((p, i) => `
+                    <div class="ranking-item">
+                        <span class="ranking-pos" style="background:#ef4444">${i + 1}</span>
+                        <span class="ranking-name">${p.nombre}</span>
+                        <span class="ranking-qty">${p.total_vendido} uds.</span>
+                    </div>`).join('')
+                : '<p class="empty-state" style="font-size:0.85rem">Sin datos aún.</p>';
+        }
+
+        function drawBarChart(dias) {
+            const canvas = document.getElementById('ingresosChart');
+            const ctx = canvas.getContext('2d');
+
+            // Ajustar resolución para pantallas retina
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = 200 * dpr;
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = '200px';
+            ctx.scale(dpr, dpr);
+
+            const W = rect.width;
+            const H = 200;
+            const padL = 60, padR = 16, padT = 16, padB = 40;
+            const chartW = W - padL - padR;
+            const chartH = H - padT - padB;
+
+            ctx.clearRect(0, 0, W, H);
+
+            const maxVal = Math.max(...dias.map(d => d.total), 1);
+            const barW = (chartW / dias.length) * 0.55;
+            const gap = chartW / dias.length;
+
+            // Estilo
+            const colorBar = '#6b4f3a';
+            const colorGrid = '#e5e7eb';
+            const colorText = '#9ca3af';
+
+            // Líneas de guía (4 líneas)
+            ctx.strokeStyle = colorGrid;
+            ctx.lineWidth = 1;
+            ctx.font = `11px DM Sans, sans-serif`;
+            ctx.fillStyle = colorText;
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 4; i++) {
+                const y = padT + chartH - (chartH / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(padL, y);
+                ctx.lineTo(W - padR, y);
+                ctx.stroke();
+                const label = Math.round((maxVal / 4) * i);
+                ctx.fillText('$' + label.toLocaleString('es-CL'), padL - 6, y + 4);
+            }
+
+            // Barras y etiquetas
+            dias.forEach((d, i) => {
+                const barH = (d.total / maxVal) * chartH;
+                const x = padL + gap * i + gap / 2 - barW / 2;
+                const y = padT + chartH - barH;
+
+                // Barra con esquinas redondeadas
+                ctx.fillStyle = colorBar;
+                const r = Math.min(4, barW / 2);
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.lineTo(x + barW - r, y);
+                ctx.quadraticCurveTo(x + barW, y, x + barW, y + r);
+                ctx.lineTo(x + barW, padT + chartH);
+                ctx.lineTo(x, padT + chartH);
+                ctx.lineTo(x, y + r);
+                ctx.quadraticCurveTo(x, y, x + r, y);
+                ctx.closePath();
+                ctx.fill();
+
+                // Etiqueta del eje X
+                ctx.fillStyle = colorText;
+                ctx.textAlign = 'center';
+                ctx.fillText(d.fecha, x + barW / 2, H - padB + 16);
             });
         }
 
@@ -666,6 +992,7 @@
         // ── Init ──
         (async () => {
             try {
+                await loadCafeStatus();           // NUEVO: cargar estado del café
                 await loadOrders();
                 renderOrders('todos');
                 setInterval(async () => {
@@ -678,5 +1005,4 @@
         })();
     </script>
 </body>
-
 </html>

@@ -131,14 +131,14 @@ const API_BASE = 'http://localhost:8000';
 const token = localStorage.getItem('cafeAuth');
 const role = localStorage.getItem('cafeRole');
 const username = localStorage.getItem('cafeUser') || '';
-if (!token || role !== 'empleado') { window.location.href = 'admin-login.html'; }
+if (!token || role !== 'empleado') { window.location.href = '/admin-login/'; }
 document.getElementById('userChip').textContent = `👤 ${username}`;
 
 function logout() {
     localStorage.removeItem('cafeAuth');
     localStorage.removeItem('cafeRole');
     localStorage.removeItem('cafeUser');
-    window.location.href = 'admin-login.html';
+    window.location.href = '/admin-login/';
 }
 
 async function apiFetch(path, options = {}) {

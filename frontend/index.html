@@ -7,6 +7,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Café Usm | Home</title>
     <link rel="stylesheet" href="{% static 'index.css' %}">
+
+    <style>
+        .nav-hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .nav-hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--color-1);
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .nav-hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                gap: 0.2rem;
+                padding: 0.8rem 0 0.4rem;
+                border-top: 1px solid var(--glass-border);
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .glass-nav {
+                flex-wrap: wrap;
+                padding: 1rem 5%;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -14,7 +59,12 @@
 
     <nav class="glass-nav">
         <div class="logo">CAFÉ<span>USM</span></div>
-        <ul class="nav-links">
+
+        <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" aria-label="Menú">
+            <span></span><span></span><span></span>
+        </button>
+
+        <ul class="nav-links" id="navLinks">
             <li><a href="index.html" class="active">Inicio</a></li>
             <li><a href="menu.html">Menú</a></li>
             <li><a href="#contacto">Contacto</a></li>
@@ -36,7 +86,7 @@
     <django-html></django-html>
 
     {%block contenido %}
-    
+
     {%endblock%}
 
     <section id="especialidades" class="specials-section">
@@ -180,6 +230,12 @@
             <p>&copy; 2026 Café Usm. Todos los derechos reservados.</p>
         </div>
     </footer>
+    
+    <script>
+        function toggleMobileNav() {
+            document.getElementById('navLinks').classList.toggle('open');
+        }
+    </script>
 </body>
 
 </html>
