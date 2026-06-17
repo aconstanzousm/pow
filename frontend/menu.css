@@ -424,11 +424,43 @@ body {
     color: var(--color-1); font-size: 0.9rem; font-weight: 600;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* ── Responsive ── */
+@media (max-width: 992px) {
     .items-grid { grid-template-columns: 1fr; }
-    .glass-nav { padding: 1.5rem 5%; }
-    .category-header h2 { font-size: 1.5rem; }
-    .nav-links { gap: 1.5rem; }
-    .modal-cart { width: 100vw; }
+    .promos-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+}
+
+@media (max-width: 768px) {
+    .glass-nav {
+        padding: 1rem 5%;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+    }
+    .nav-links { gap: 1rem; }
+    .nav-links a { font-size: 0.78rem; }
+    .nav-right { gap: 8px; }
+    .cart-btn { padding: 0.4rem 0.8rem; font-size: 0.9rem; }
+    .cafe-status-badge { font-size: 0.7rem; padding: 3px 8px; }
+
+    .promos-section { padding: 2.5rem 5%; }
+    .section-title { font-size: 1.8rem; }
+    .menu-category { padding: 2rem 5%; }
+    .category-header h2 { font-size: 1.4rem; }
+    .items-grid { grid-template-columns: 1fr; }
+
+    .modal-cart { width: 100vw; padding: 1.5rem 1.2rem; }
+
+    .glass-footer { padding: 3rem 5% 2rem; }
+    .footer-grid { flex-direction: column; gap: 1.5rem; }
+
+    .closed-banner { font-size: 0.82rem; padding: 10px 16px; }
+}
+
+@media (max-width: 480px) {
+    .item-card { padding: 1rem; }
+    .item-info h3 { font-size: 1rem; }
+    .item-price { font-size: 1rem; }
+    .promo-card { padding: 1.5rem; }
+    .promo-card h3 { font-size: 1.3rem; }
+    .promos-grid { grid-template-columns: 1fr; }
 }

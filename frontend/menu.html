@@ -17,14 +17,17 @@
             flex-shrink: 0;
             margin-right: 12px;
         }
+
         /* Para que el item-card soporte imagen a la izquierda cuando existe */
         .item-card.has-img {
             display: flex;
             align-items: center;
         }
+
         .item-card.has-img .item-info {
             flex: 1;
         }
+
         /* Imagen cuadrada en promos */
         .promo-card .promo-img {
             width: 100%;
@@ -34,6 +37,116 @@
             margin-bottom: 10px;
             display: block;
         }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cafe-status-badge {
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.03em;
+        }
+
+        .cafe-status-badge.open {
+            background: rgba(34, 197, 94, 0.15);
+            color: #16a34a;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .cafe-status-badge.closed {
+            background: rgba(239, 68, 68, 0.12);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        /* Tarjetas deshabilitadas cuando está cerrado */
+        body.cafe-closed .item-card,
+        body.cafe-closed .promo-card {
+            cursor: default;
+            opacity: 0.75;
+            pointer-events: none;
+        }
+
+        body.cafe-closed .item-add,
+        body.cafe-closed .add-hint {
+            display: none;
+        }
+
+        body.cafe-closed #cartBtn {
+            display: none;
+        }
+
+        .closed-banner {
+            text-align: center;
+            padding: 14px 20px;
+            background: rgba(239, 68, 68, 0.08);
+            border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Hamburger móvil */
+        .nav-hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            order: 3;
+        }
+
+        .nav-hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--color-1);
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .glass-nav {
+                flex-wrap: wrap;
+                padding: 1rem 5%;
+                position: relative;
+            }
+
+            .nav-hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                order: 4;
+                gap: 0.2rem;
+                padding: 0.8rem 0 0.4rem;
+                border-top: 1px solid var(--glass-border);
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 0.5rem 0;
+                font-size: 0.9rem;
+            }
+
+            .nav-right {
+                order: 2;
+                margin-left: auto;
+            }
+        }
     </style>
 </head>
 
@@ -42,15 +155,28 @@
 
     <nav class="glass-nav">
         <div class="logo">CAFÉ<span>USM</span></div>
-        <ul class="nav-links">
+
+        <!-- Hamburger (solo móvil) -->
+        <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" aria-label="Menú">
+            <span></span><span></span><span></span>
+        </button>
+
+        <ul class="nav-links" id="navLinks">
             <li><a href="index.html">Inicio</a></li>
             <li><a href="menu.html" class="active">Menú</a></li>
             <li><a href="index.html#contacto">Contacto</a></li>
         </ul>
-        <button class="cart-btn" onclick="openCart()">
-            🛒 <span class="cart-count" id="cartCount">0</span>
-        </button>
+
+        <div class="nav-right">
+            <span class="cafe-status-badge" id="cafeStatusBadge" style="display:none"></span>
+            <button class="cart-btn" id="cartBtn" onclick="openCart()">
+                🛒 <span class="cart-count" id="cartCount">0</span>
+            </button>
+        </div>
     </nav>
+    <div class="closed-banner" id="closedBanner" style="display:none">
+        🔴 La cafetería está cerrada en este momento. Puedes ver el menú pero no realizar pedidos.
+    </div>
 
     <!-- Promos (categoría "Promos" de la API) -->
     <section class="promos-section" id="promos-section" style="display:none">
@@ -114,11 +240,13 @@
     <script>
         const API_BASE = 'http://localhost:8000';
         let cart = [];
+        let cafeAbierto = true;
 
         // ── Carrito ──
         function formatPrice(n) { return '$' + n.toLocaleString('es-CL'); }
 
         function addToCart(id, name, price) {
+            if (!cafeAbierto) { showToast('La cafetería está cerrada 🔴'); return; }
             const existing = cart.find(i => i.id === id);
             if (existing) { existing.qty++; }
             else { cart.push({ id, name, price, qty: 1 }); }
@@ -143,9 +271,9 @@
             const count = cart.reduce((s, i) => s + i.qty, 0);
             document.getElementById('cartCount').textContent = count;
 
-            const total     = cart.reduce((s, i) => s + i.price * i.qty, 0);
-            const itemsEl   = document.getElementById('cartItems');
-            const emptyEl   = document.getElementById('cartEmpty');
+            const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const itemsEl = document.getElementById('cartItems');
+            const emptyEl = document.getElementById('cartEmpty');
             const summaryEl = document.getElementById('cartSummary');
 
             if (!cart.length) {
@@ -159,26 +287,30 @@
             summaryEl.style.display = 'block';
 
             itemsEl.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <span class="cart-item-name">${item.name}</span>
-                        <span class="cart-item-unit">${formatPrice(item.price)} c/u</span>
-                    </div>
-                    <div class="cart-item-controls">
-                        <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
-                        <span class="qty-num">${item.qty}</span>
-                        <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
-                        <span class="cart-item-subtotal">${formatPrice(item.price * item.qty)}</span>
-                        <button class="remove-btn" onclick="removeItem(${item.id})">✕</button>
-                    </div>
+            <div class="cart-item">
+                <div class="cart-item-info">
+                    <span class="cart-item-name">${item.name}</span>
+                    <span class="cart-item-unit">${formatPrice(item.price)} c/u</span>
                 </div>
-            `).join('');
+                <div class="cart-item-controls">
+                    <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
+                    <span class="qty-num">${item.qty}</span>
+                    <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+                    <span class="cart-item-subtotal">${formatPrice(item.price * item.qty)}</span>
+                    <button class="remove-btn" onclick="removeItem(${item.id})">✕</button>
+                </div>
+            </div>
+        `).join('');
 
             document.getElementById('cartSubtotal').textContent = formatPrice(total);
-            document.getElementById('cartTotal').textContent    = formatPrice(total);
+            document.getElementById('cartTotal').textContent = formatPrice(total);
         }
 
-        function openCart()  { document.getElementById('cartModal').classList.add('active');    document.body.style.overflow = 'hidden'; }
+        function openCart() {
+            if (!cafeAbierto) { showToast('La cafetería está cerrada 🔴'); return; }
+            document.getElementById('cartModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
         function closeCart() { document.getElementById('cartModal').classList.remove('active'); document.body.style.overflow = ''; }
         function handleOverlayClick(e) { if (e.target === document.getElementById('cartModal')) closeCart(); }
 
@@ -190,21 +322,55 @@
         }
 
         function goToCheckout() {
+            if (!cafeAbierto) { showToast('La cafetería está cerrada 🔴'); return; }
             sessionStorage.setItem('cafeCart', JSON.stringify(cart));
             window.location.href = 'checkout.html';
         }
 
+        // ── Estado del café ──
+        function applyCafeStatus(abierto) {
+            cafeAbierto = abierto;
+            const badge = document.getElementById('cafeStatusBadge');
+            const banner = document.getElementById('closedBanner');
+
+            badge.style.display = '';
+            if (abierto) {
+                badge.textContent = '● Abierto';
+                badge.className = 'cafe-status-badge open';
+                banner.style.display = 'none';
+                document.body.classList.remove('cafe-closed');
+            } else {
+                badge.textContent = '● Cerrado';
+                badge.className = 'cafe-status-badge closed';
+                banner.style.display = 'block';
+                document.body.classList.add('cafe-closed');
+                // Vaciar carrito si estaba con items
+                cart = [];
+                updateCartUI();
+            }
+        }
+
         // ── Carga dinámica del menú ──
-        const CAT_ICONS  = { 'Cafés': '☕', 'Dulces': '🍰', 'Promos': '🎁', 'Otros': '🍽️' };
+        const CAT_ICONS = { 'Cafés': '☕', 'Dulces': '🍰', 'Promos': '🎁', 'Otros': '🍽️' };
         const CAT_TITLES = { 'Cafés': 'Nuestros <span>Cafés</span>', 'Dulces': 'Dulces <span>Tentaciones</span>' };
 
         function escQ(s) { return (s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
 
         async function loadMenuProducts() {
             try {
-                const res  = await fetch(`${API_BASE}/productos/`);
-                if (!res.ok) throw new Error(res.status);
-                const data = await res.json();
+                // Consultar estado del café y productos en paralelo
+                const [statusRes, prodRes] = await Promise.all([
+                    fetch(`${API_BASE}/cafe-status/`),
+                    fetch(`${API_BASE}/productos/`)
+                ]);
+
+                if (statusRes.ok) {
+                    const statusData = await statusRes.json();
+                    applyCafeStatus(statusData.abierto);
+                }
+
+                if (!prodRes.ok) throw new Error(prodRes.status);
+                const data = await prodRes.json();
 
                 const activos = data.filter(p => p.activo);
 
@@ -213,20 +379,20 @@
                 if (promos.length) {
                     document.getElementById('promos-section').style.display = '';
                     document.getElementById('promos-grid').innerHTML = promos.map(p => `
-                        <div class="promo-card" onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio})" role="button" tabindex="0">
-                            ${p.imagen ? `<img class="promo-img" src="${p.imagen}" alt="${escQ(p.nombre)}">` : ''}
-                            <div class="promo-tag">Promo</div>
-                            <h3>${p.nombre}</h3>
-                            <p>${p.descripcion || ''}</p>
-                            <div class="card-footer">
-                                <span class="price">$${p.precio.toLocaleString('es-CL')}</span>
-                                <span class="add-hint">+ Agregar</span>
-                            </div>
+                    <div class="promo-card" onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio})" role="button" tabindex="0">
+                        ${p.imagen ? `<img class="promo-img" src="${p.imagen}" alt="${escQ(p.nombre)}">` : ''}
+                        <div class="promo-tag">Promo</div>
+                        <h3>${p.nombre}</h3>
+                        <p>${p.descripcion || ''}</p>
+                        <div class="card-footer">
+                            <span class="price">$${p.precio.toLocaleString('es-CL')}</span>
+                            <span class="add-hint">+ Agregar</span>
                         </div>
-                    `).join('');
+                    </div>
+                `).join('');
                 }
 
-                // ── Categorías normales: Cafés primero, Dulces segundo, resto en orden ──
+                // ── Categorías normales ──
                 const otherCats = [...new Set(
                     activos
                         .filter(p => p.categoria !== 'Promos')
@@ -234,38 +400,38 @@
                 )];
 
                 const priority = ['Cafés', 'Dulces'];
-                const ordered  = [
+                const ordered = [
                     ...priority.filter(c => otherCats.includes(c)),
                     ...otherCats.filter(c => !priority.includes(c)),
                 ];
 
                 document.getElementById('cat-sections').innerHTML = ordered.map(cat => {
                     const items = activos.filter(p => (p.categoria || 'Otros') === cat);
-                    const icon  = CAT_ICONS[cat]  || '🍽️';
-                    const title = CAT_TITLES[cat]  || cat;
+                    const icon = CAT_ICONS[cat] || '🍽️';
+                    const title = CAT_TITLES[cat] || cat;
                     return `
-                    <section class="menu-category">
-                        <div class="category-header">
-                            <i class="icon">${icon}</i>
-                            <h2>${title}</h2>
-                        </div>
-                        <div class="items-grid">
-                            ${items.map(p => `
-                            <div class="item-card${p.imagen ? ' has-img' : ''}"
-                                 onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio})"
-                                 role="button" tabindex="0">
-                                ${p.imagen ? `<img class="product-img" src="${p.imagen}" alt="${escQ(p.nombre)}">` : ''}
-                                <div class="item-info">
-                                    <h3>${p.nombre}</h3>
-                                    <p>${p.descripcion || ''}</p>
-                                </div>
-                                <div class="item-right">
-                                    <span class="item-price">$${p.precio.toLocaleString('es-CL')}</span>
-                                    <span class="item-add">+</span>
-                                </div>
-                            </div>`).join('')}
-                        </div>
-                    </section>`;
+                <section class="menu-category">
+                    <div class="category-header">
+                        <i class="icon">${icon}</i>
+                        <h2>${title}</h2>
+                    </div>
+                    <div class="items-grid">
+                        ${items.map(p => `
+                        <div class="item-card${p.imagen ? ' has-img' : ''}"
+                             onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio})"
+                             role="button" tabindex="0">
+                            ${p.imagen ? `<img class="product-img" src="${p.imagen}" alt="${escQ(p.nombre)}">` : ''}
+                            <div class="item-info">
+                                <h3>${p.nombre}</h3>
+                                <p>${p.descripcion || ''}</p>
+                            </div>
+                            <div class="item-right">
+                                <span class="item-price">$${p.precio.toLocaleString('es-CL')}</span>
+                                <span class="item-add">+</span>
+                            </div>
+                        </div>`).join('')}
+                    </div>
+                </section>`;
                 }).join('');
 
                 document.querySelectorAll('[role="button"]').forEach(el => {
@@ -280,6 +446,10 @@
         }
 
         loadMenuProducts();
+
+        function toggleMobileNav() {
+            document.getElementById('navLinks').classList.toggle('open');
+        }
     </script>
 </body>
 
