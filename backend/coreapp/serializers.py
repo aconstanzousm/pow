@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from .models import Empleado, Pedido, PedidoItem, Producto
-
+from .models import CafeConfig
 
 class EmpleadoSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=False)
@@ -157,3 +157,9 @@ class PedidoSerializer(serializers.ModelSerializer):
             instance.save(update_fields=["total"])
 
         return instance
+
+class CafeConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CafeConfig
+        fields = ("abierto", "updated_at")
+        read_only_fields = ("updated_at",)

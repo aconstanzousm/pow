@@ -67,3 +67,23 @@ class PedidoItem(models.Model):
 
     def __str__(self) -> str:
         return f"{self.nombre} x{self.cantidad}"
+
+class CafeConfig(models.Model):
+    """Singleton: configuración global del café."""
+    abierto = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Configuración del Café"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1  # Forzar singleton
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def __str__(self):
+        return "Abierto" if self.abierto else "Cerrado"
