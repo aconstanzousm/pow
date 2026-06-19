@@ -38,12 +38,19 @@ class EmpleadoSerializer(serializers.ModelSerializer):
 
 
 class ProductoSerializer(serializers.ModelSerializer):
-    # imagen es un campo de archivo; puede ser null. Se retorna la URL absoluta.
     imagen = serializers.ImageField(required=False, allow_null=True, use_url=True)
+    bajo_stock = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Producto
-        fields = ("id", "nombre", "descripcion", "precio", "categoria", "activo", "imagen", "created_at", "updated_at")
+        fields = (
+            "id", "nombre", "descripcion", "precio", "categoria", "activo",
+            "imagen", "stock", "stock_minimo", "bajo_stock",
+            "created_at", "updated_at",
+        )
+
+    def get_bajo_stock(self, obj):
+        return obj.stock <= obj.stock_minimo
 
 
 class PedidoItemSerializer(serializers.ModelSerializer):

@@ -8,34 +8,99 @@
     <title>Café Usm | Menú</title>
     <link rel="stylesheet" href="{% static 'menu.css' %}">
     <style>
-        /* Imagen cuadrada en tarjetas de ítems normales */
-        .item-card .product-img {
-            width: 72px;
-            height: 72px;
-            object-fit: cover;
-            border-radius: 10px;
-            flex-shrink: 0;
-            margin-right: 12px;
+        /* ── Promos compactas ── */
+        .promos-grid {
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 1rem;
         }
 
-        /* Para que el item-card soporte imagen a la izquierda cuando existe */
-        .item-card.has-img {
-            display: flex;
-            align-items: center;
+        .promo-card {
+            padding: 1.1rem;
+            border-radius: 18px;
         }
 
-        .item-card.has-img .item-info {
-            flex: 1;
-        }
-
-        /* Imagen cuadrada en promos */
         .promo-card .promo-img {
             width: 100%;
             aspect-ratio: 1 / 1;
             object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 10px;
+            border-radius: 12px;
+            margin-bottom: 0.6rem;
             display: block;
+        }
+
+        .promo-card .promo-tag {
+            top: 0.7rem;
+            right: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.6rem;
+        }
+
+        .promo-card h3 {
+            font-size: 1.05rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .promo-card p {
+            font-size: 0.8rem;
+            margin-bottom: 0.7rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .promo-card .price {
+            font-size: 1.05rem;
+        }
+
+        .promo-card .add-hint {
+            font-size: 0.7rem;
+        }
+
+        /* ── Productos como cards: imagen arriba, texto abajo ── */
+        .items-grid {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        }
+
+        .item-card {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .item-card .product-img,
+        .item-card .product-img-placeholder {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 0;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .item-card .product-img-placeholder {
+            background: rgba(98, 78, 136, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+        }
+
+        .item-card .item-info {
+            padding: 1rem 1.1rem 0.3rem;
+        }
+
+        .item-card .item-right {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.1rem 1.1rem;
+        }
+
+        .item-card .item-add {
+            font-size: 1.2rem;
         }
 
         .nav-right {
@@ -410,28 +475,30 @@
                     const icon = CAT_ICONS[cat] || '🍽️';
                     const title = CAT_TITLES[cat] || cat;
                     return `
-                <section class="menu-category">
-                    <div class="category-header">
-                        <i class="icon">${icon}</i>
-                        <h2>${title}</h2>
-                    </div>
-                    <div class="items-grid">
-                        ${items.map(p => `
-                        <div class="item-card${p.imagen ? ' has-img' : ''}"
-                             onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio})"
-                             role="button" tabindex="0">
-                            ${p.imagen ? `<img class="product-img" src="${p.imagen}" alt="${escQ(p.nombre)}">` : ''}
-                            <div class="item-info">
-                                <h3>${p.nombre}</h3>
-                                <p>${p.descripcion || ''}</p>
-                            </div>
-                            <div class="item-right">
-                                <span class="item-price">$${p.precio.toLocaleString('es-CL')}</span>
-                                <span class="item-add">+</span>
-                            </div>
-                        </div>`).join('')}
-                    </div>
-                </section>`;
+<section class="menu-category">
+    <div class="category-header">
+        <i class="icon">${icon}</i>
+        <h2>${title}</h2>
+    </div>
+    <div class="items-grid">
+        ${items.map(p => `
+        <div class="item-card"
+             onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio})"
+             role="button" tabindex="0">
+            ${p.imagen
+                            ? `<img class="product-img" src="${p.imagen}" alt="${escQ(p.nombre)}">`
+                            : `<div class="product-img-placeholder">${icon}</div>`}
+            <div class="item-info">
+                <h3>${p.nombre}</h3>
+                <p>${p.descripcion || ''}</p>
+            </div>
+            <div class="item-right">
+                <span class="item-price">$${p.precio.toLocaleString('es-CL')}</span>
+                <span class="item-add">+</span>
+            </div>
+        </div>`).join('')}
+    </div>
+</section>`;
                 }).join('');
 
                 document.querySelectorAll('[role="button"]').forEach(el => {

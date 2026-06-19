@@ -6,7 +6,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum, Count
 from rest_framework import permissions, viewsets, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 
@@ -160,6 +160,9 @@ class ProductoViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ('list', 'retrieve'):
             return [permissions.AllowAny()]
+        if self.action == 'ajustar_stock':
+            # Admin y empleados autenticados pueden ajustar stock
+            return [permissions.IsAuthenticated()]
         return [permissions.IsAdminUser()]
 
     def perform_create(self, serializer):
@@ -176,6 +179,26 @@ class ProductoViewSet(viewsets.ModelViewSet):
         if not self.request.user.is_staff:
             raise PermissionDenied()
         super().perform_destroy(instance)
+
+    @action(detail=True, methods=['post'], url_path='ajustar-stock')
+    def ajustar_stock(self, request, pk=None):
+        """Suma o resta stock manualmente. Body: {"delta": 5} o {"delta": -2}"""
+        producto = self.get_object()
+        try:
+            delta = int(request.data.get('delta', 0))
+        except (TypeError, ValueError):
+            return Response({'error': 'El valor de "delta" debe ser un número entero.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if delta == 0:
+            return Response({'error': 'El ajuste no puede ser 0.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        nuevo_stock = producto.stock + delta
+        if nuevo_stock < 0:
+            return Response({'error': 'No hay suficiente stock para esa operación.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        producto.stock = nuevo_stock
+        producto.save(update_fields=['stock'])
+        return Response(self.get_serializer(producto).data)
 
 
 class PedidoViewSet(viewsets.ModelViewSet):

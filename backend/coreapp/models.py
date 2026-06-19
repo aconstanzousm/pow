@@ -29,8 +29,9 @@ class Producto(models.Model):
     precio = models.PositiveIntegerField()
     categoria = models.CharField(max_length=60, blank=True)
     activo = models.BooleanField(default=True)
-    # Campo para la imagen del producto (opcional)
     imagen = models.ImageField(upload_to="productos/", null=True, blank=True)
+    stock = models.IntegerField(default=0)
+    stock_minimo = models.PositiveIntegerField(default=5)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

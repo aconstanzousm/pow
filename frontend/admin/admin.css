@@ -619,3 +619,95 @@ body {
     .modal-body { padding: 1.4rem 1.5rem; }
     .modal-head, .modal-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
 }
+
+/* ── Stock como cards (estilo menú) ── */
+.stock-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 1.2rem;
+}
+
+.stock-card {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    transition: 0.25s;
+    box-shadow: 0 2px 12px rgba(98,78,136,0.05);
+}
+.stock-card:hover {
+    border-color: var(--color-3);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(203,128,171,0.18);
+}
+
+.stock-card-img,
+.stock-card-img-placeholder {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+    flex-shrink: 0;
+    max-width: 100%;
+}
+.stock-card-img-placeholder {
+    background: rgba(98,78,136,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.6rem;
+}
+
+.stock-card-body {
+    padding: 1rem 1.1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.stock-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.stock-card-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.25;
+}
+
+.stock-card-qty {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: rgba(137,103,179,0.08);
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    width: fit-content;
+}
+.stock-card-qty strong { color: var(--color-1); font-size: 0.9rem; }
+.stock-card-qty.low {
+    background: rgba(224,92,122,0.1);
+}
+.stock-card-qty.low strong { color: var(--red); }
+
+.stock-card-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+.stock-card-actions .btn-action {
+    flex: 1;
+    text-align: center;
+}
