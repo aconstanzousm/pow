@@ -19,17 +19,19 @@
             width: 100%;
             max-width: 240px;
         }
+
         .img-preview-wrap img {
             width: 100%;
             border-radius: 8px;
             object-fit: cover;
             max-height: 140px;
         }
+
         .img-preview-wrap .remove-img {
             position: absolute;
             top: 4px;
             right: 4px;
-            background: rgba(0,0,0,0.55);
+            background: rgba(0, 0, 0, 0.55);
             color: #fff;
             border: none;
             border-radius: 50%;
@@ -40,7 +42,12 @@
             line-height: 22px;
             text-align: center;
         }
-        input[type="file"] { font-size: 0.875rem; color: var(--text-muted, #888); }
+
+        input[type="file"] {
+            font-size: 0.875rem;
+            color: var(--text-muted, #888);
+        }
+
         .product-img-thumb {
             width: 36px;
             height: 36px;
@@ -58,16 +65,24 @@
             font-size: 0.875rem;
             font-weight: 500;
         }
+
         .cafe-toggle-label {
             color: var(--text-muted, #888);
         }
+
         .toggle-switch {
             position: relative;
             width: 48px;
             height: 26px;
             cursor: pointer;
         }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
         .toggle-track {
             position: absolute;
             inset: 0;
@@ -75,6 +90,7 @@
             border-radius: 26px;
             transition: background 0.25s;
         }
+
         .toggle-track::after {
             content: '';
             position: absolute;
@@ -86,11 +102,27 @@
             border-radius: 50%;
             transition: transform 0.25s;
         }
-        .toggle-switch input:checked + .toggle-track { background: #22c55e; }
-        .toggle-switch input:checked + .toggle-track::after { transform: translateX(22px); }
-        .cafe-status-text { font-weight: 600; min-width: 56px; }
-        .cafe-status-text.open { color: #22c55e; }
-        .cafe-status-text.closed { color: #ef4444; }
+
+        .toggle-switch input:checked+.toggle-track {
+            background: #22c55e;
+        }
+
+        .toggle-switch input:checked+.toggle-track::after {
+            transform: translateX(22px);
+        }
+
+        .cafe-status-text {
+            font-weight: 600;
+            min-width: 56px;
+        }
+
+        .cafe-status-text.open {
+            color: #22c55e;
+        }
+
+        .cafe-status-text.closed {
+            color: #ef4444;
+        }
 
         /* NUEVO: Estadísticas */
         .stats-grid {
@@ -99,12 +131,14 @@
             gap: 16px;
             margin-bottom: 24px;
         }
+
         .stat-block {
             background: var(--surface, #fff);
             border: 1px solid var(--border, #e5e7eb);
             border-radius: 12px;
             padding: 20px;
         }
+
         .stat-block .stat-title {
             font-size: 0.78rem;
             text-transform: uppercase;
@@ -112,21 +146,25 @@
             color: var(--text-muted, #888);
             margin-bottom: 6px;
         }
+
         .stat-block .stat-value {
             font-size: 1.6rem;
             font-weight: 700;
             color: var(--text, #111);
         }
+
         .stat-block .stat-sub {
             font-size: 0.8rem;
             color: var(--text-muted, #888);
             margin-top: 2px;
         }
+
         .periodo-tabs {
             display: flex;
             gap: 6px;
             margin-bottom: 16px;
         }
+
         .periodo-tabs .tab {
             padding: 6px 16px;
             border-radius: 20px;
@@ -138,11 +176,13 @@
             font-family: inherit;
             transition: all 0.15s;
         }
+
         .periodo-tabs .tab.active {
             background: var(--primary, #6b4f3a);
             color: #fff;
             border-color: var(--primary, #6b4f3a);
         }
+
         .chart-wrap {
             background: var(--surface, #fff);
             border: 1px solid var(--border, #e5e7eb);
@@ -150,33 +190,44 @@
             padding: 20px;
             margin-bottom: 24px;
         }
+
         .chart-wrap h3 {
             font-size: 0.95rem;
             font-weight: 600;
             margin-bottom: 16px;
             color: var(--text, #111);
         }
+
         canvas#ingresosChart {
             width: 100% !important;
             max-height: 200px;
         }
+
         .ranking-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
         }
-        @media (max-width: 640px) { .ranking-grid { grid-template-columns: 1fr; } }
+
+        @media (max-width: 640px) {
+            .ranking-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .ranking-block {
             background: var(--surface, #fff);
             border: 1px solid var(--border, #e5e7eb);
             border-radius: 12px;
             padding: 16px;
         }
+
         .ranking-block h3 {
             font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 12px;
         }
+
         .ranking-item {
             display: flex;
             align-items: center;
@@ -185,7 +236,11 @@
             border-bottom: 1px solid var(--border, #f3f4f6);
             font-size: 0.875rem;
         }
-        .ranking-item:last-child { border-bottom: none; }
+
+        .ranking-item:last-child {
+            border-bottom: none;
+        }
+
         .ranking-pos {
             width: 22px;
             height: 22px;
@@ -200,7 +255,12 @@
             margin-right: 10px;
             flex-shrink: 0;
         }
-        .ranking-name { flex: 1; color: var(--text, #111); }
+
+        .ranking-name {
+            flex: 1;
+            color: var(--text, #111);
+        }
+
         .ranking-qty {
             font-weight: 600;
             color: var(--text-muted, #888);
@@ -288,13 +348,14 @@
             </div>
         </section>
 
-        <!-- SECCIÓN: PRODUCTOS (sin cambios) -->
+        <!-- SECCIÓN: PRODUCTOS  -->
         <section class="section" id="sec-productos">
             <div class="section-block">
                 <div class="block-header">
                     <h2>Gestión de Productos</h2>
                     <button class="btn-primary" onclick="openProductModal()">+ Nuevo Producto</button>
                 </div>
+                <div id="lowStockAlert" class="low-stock-alert" style="display:none"></div>
                 <div class="products-table-wrap">
                     <table class="data-table" id="productsTable">
                         <thead>
@@ -302,6 +363,7 @@
                                 <th>Nombre</th>
                                 <th>Categoría</th>
                                 <th>Precio</th>
+                                <th>Stock</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -312,7 +374,7 @@
             </div>
         </section>
 
-        <!-- SECCIÓN: USUARIOS (sin cambios) -->
+        <!-- SECCIÓN: USUARIOS -->
         <section class="section" id="sec-usuarios">
             <div class="section-block">
                 <div class="block-header">
@@ -347,7 +409,7 @@
         </section>
     </main>
 
-    <!-- Modales: sin cambios -->
+    <!-- Modales -->
     <div class="modal-overlay" id="productModal" onclick="handleModalClick(event,'productModal')">
         <div class="modal-box">
             <div class="modal-head">
@@ -376,6 +438,16 @@
                             <option value="Promos">Promos</option>
                             <option value="Otros">Otros</option>
                         </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Stock</label>
+                        <input type="number" id="pStock" placeholder="0" min="0">
+                    </div>
+                    <div class="form-field">
+                        <label>Alerta bajo stock</label>
+                        <input type="number" id="pStockMin" placeholder="5" min="0">
                     </div>
                 </div>
                 <div class="form-field">
@@ -534,6 +606,9 @@
                 cat: p.categoria || 'Otros',
                 status: p.activo ? 'activo' : 'inactivo',
                 imagen: p.imagen || null,
+                stock: p.stock ?? 0,
+                stockMin: p.stock_minimo ?? 5,
+                bajoStock: !!p.bajo_stock,
             };
         }
 
@@ -677,25 +752,42 @@
             });
         }
 
-        // ── PRODUCTOS (sin cambios) ──
+        // ── PRODUCTOS ──
         function renderProducts() {
+            const low = products.filter(p => p.bajoStock);
+            const alertEl = document.getElementById('lowStockAlert');
+            if (low.length) {
+                alertEl.style.display = 'block';
+                alertEl.textContent = `⚠️ ${low.length} producto(s) con bajo stock: ${low.map(p => p.name).join(', ')}`;
+            } else {
+                alertEl.style.display = 'none';
+            }
+
             const tbody = document.getElementById('productsBody');
             tbody.innerHTML = products.map(p => `
-            <tr>
-                <td>
-                    ${p.imagen ? `<img src="${p.imagen}" class="product-img-thumb" alt="${p.name}">` : ''}
-                    <strong>${p.name}</strong><br>
-                    <small style="color:var(--text-muted)">${p.desc}</small>
-                </td>
-                <td><span class="cat-chip">${p.cat}</span></td>
-                <td>$${p.price.toLocaleString('es-CL')}</td>
-                <td><span class="badge ${p.status === 'activo' ? 'badge-done' : 'badge-off'}">${p.status === 'activo' ? '✓ Activo' : '✗ Inactivo'}</span></td>
-                <td class="action-cell">
-                    <button class="btn-icon" onclick="editProduct(${p.id})">✏️</button>
-                    <button class="btn-icon danger" onclick="deleteProduct(${p.id})">🗑️</button>
-                </td>
-            </tr>
-            `).join('');
+    <tr>
+        <td>
+            ${p.imagen ? `<img src="${p.imagen}" class="product-img-thumb" alt="${p.name}">` : ''}
+            <strong>${p.name}</strong><br>
+            <small style="color:var(--text-muted)">${p.desc}</small>
+        </td>
+        <td><span class="cat-chip">${p.cat}</span></td>
+        <td>$${p.price.toLocaleString('es-CL')}</td>
+        <td>
+            <div class="stock-cell">
+                <button class="stock-adj-btn" onclick="adjustStock(${p.id},-1)">−</button>
+                <span class="stock-num ${p.bajoStock ? 'low' : ''}">${p.stock}</span>
+                <button class="stock-adj-btn" onclick="adjustStock(${p.id},1)">+</button>
+                ${p.bajoStock ? '<span class="low-stock-badge">⚠ Bajo</span>' : ''}
+            </div>
+        </td>
+        <td><span class="badge ${p.status === 'activo' ? 'badge-done' : 'badge-off'}">${p.status === 'activo' ? '✓ Activo' : '✗ Inactivo'}</span></td>
+        <td class="action-cell">
+            <button class="btn-icon" onclick="editProduct(${p.id})">✏️</button>
+            <button class="btn-icon danger" onclick="deleteProduct(${p.id})">🗑️</button>
+        </td>
+    </tr>
+    `).join('');
         }
 
         function clearImageInput() {
@@ -730,12 +822,16 @@
                 document.getElementById('pPrice').value = p.price;
                 document.getElementById('pCat').value = p.cat;
                 document.getElementById('pStatus').value = p.status;
+                document.getElementById('pStock').value = p.stock;
+                document.getElementById('pStockMin').value = p.stockMin;
                 if (p.imagen) { preview.src = p.imagen; wrap.style.display = 'block'; }
                 else { preview.src = ''; wrap.style.display = 'none'; }
             } else {
                 ['pName', 'pDesc', 'pPrice'].forEach(f => document.getElementById(f).value = '');
                 document.getElementById('pCat').value = 'Cafés';
                 document.getElementById('pStatus').value = 'activo';
+                document.getElementById('pStock').value = 0;
+                document.getElementById('pStockMin').value = 5;
                 preview.src = ''; wrap.style.display = 'none';
             }
             openModal('productModal');
@@ -743,12 +839,20 @@
 
         function editProduct(id) { openProductModal(id); }
 
+        function adjustStock(id, delta) {
+            apiFetch(`/productos/${id}/ajustar-stock/`, { method: 'POST', body: JSON.stringify({ delta }) })
+                .then(async () => { await loadProducts(); renderProducts(); showToast(delta > 0 ? 'Stock aumentado ✓' : 'Stock reducido ✓'); })
+                .catch(err => showToast('No pude ajustar el stock: ' + err.message));
+        }
+
         function saveProduct() {
             const name = document.getElementById('pName').value.trim();
             const desc = document.getElementById('pDesc').value.trim();
             const price = parseInt(document.getElementById('pPrice').value);
             const cat = document.getElementById('pCat').value;
             const status = document.getElementById('pStatus').value;
+            const stock = parseInt(document.getElementById('pStock').value) || 0;
+            const stockMin = parseInt(document.getElementById('pStockMin').value) || 5;
             const imgFile = document.getElementById('pImage').files[0];
 
             if (!name || !price) { showToast('Completa los campos requeridos.'); return; }
@@ -759,6 +863,8 @@
             formData.append('precio', price);
             formData.append('categoria', cat);
             formData.append('activo', status === 'activo' ? 'true' : 'false');
+            formData.append('stock', stock);
+            formData.append('stock_minimo', stockMin);
 
             if (imgFile) { formData.append('imagen', imgFile); }
             else if (clearExistingImage) { formData.append('imagen', ''); }
@@ -1005,4 +1111,5 @@
         })();
     </script>
 </body>
+
 </html>
