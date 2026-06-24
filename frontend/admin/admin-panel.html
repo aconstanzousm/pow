@@ -525,18 +525,19 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        const API_BASE = 'http://localhost:8000';
+        const API_BASE = window.location.origin;
+        const LOGIN_URL = '/admin-login/';
         const token = localStorage.getItem('cafeAuth');
         const role = localStorage.getItem('cafeRole');
         const username = localStorage.getItem('cafeUser') || '';
-        if (!token || role !== 'admin') { window.location.href = 'admin-login.html'; }
+        if (!token || role !== 'admin') { window.location.href = LOGIN_URL; }
         document.getElementById('userChip').textContent = `👤 ${username}`;
 
         function logout() {
             localStorage.removeItem('cafeAuth');
             localStorage.removeItem('cafeRole');
             localStorage.removeItem('cafeUser');
-            window.location.href = 'admin-login.html';
+            window.location.href = LOGIN_URL;
         }
 
         async function apiFetch(path, options = {}) {
@@ -587,6 +588,7 @@
         function mapOrder(o) {
             return {
                 id: o.id,
+                code: o.codigo_pedido || `#${o.id}`,
                 client: o.cliente_nombre || '—',
                 email: o.cliente_email || '—',
                 note: o.nota || '',
@@ -706,7 +708,7 @@
                 <div class="order-card">
                     <div class="order-card-header">
                         <div>
-                            <span class="order-id">#${o.id}</span>
+                            <span class="order-id">${o.code}</span>
                             <span class="order-time">${o.time}</span>
                         </div>
                         <span class="badge ${statusClass[o.status]}">${statusLabel[o.status]}</span>
@@ -745,7 +747,9 @@
         }
 
         function deleteOrder(id) {
-            confirmAction(`¿Eliminar pedido #${id}? Esta acción no se puede deshacer.`, () => {
+            const pedido = orders.find(o => o.id === id);
+            const codigo = pedido ? pedido.code : `#${id}`;
+            confirmAction(`¿Eliminar pedido ${codigo}? Esta acción no se puede deshacer.`, () => {
                 apiFetch(`/pedidos/${id}/`, { method: 'DELETE' })
                     .then(async () => { await loadOrders(); renderOrders(currentFilter); showToast('Pedido eliminado.'); })
                     .catch(() => showToast('No pude eliminar el pedido.'));

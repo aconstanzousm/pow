@@ -1,6 +1,10 @@
 # backend/coreapp/models.py
 from django.conf import settings
 from django.db import models
+import secrets
+
+def generate_codigo_pedido() -> str:
+    return f"PED-{secrets.token_hex(3).upper()}"
 
 
 class Empleado(models.Model):
@@ -22,6 +26,23 @@ class Empleado(models.Model):
     def __str__(self) -> str:
         return f"{self.nombre} {self.apellido}".strip()
 
+class Cliente(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="cliente_profile",
+    )
+    nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(unique=True)
+    telefono = models.CharField(max_length=30, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.nombre} {self.apellido}".strip()
 
 class Producto(models.Model):
     nombre = models.CharField(max_length=150)
@@ -47,16 +68,27 @@ class Pedido(models.Model):
         CANCELADO = "cancelado", "Cancelado"
 
     cliente_nombre = models.CharField(max_length=150)
+    codigo_pedido = models.CharField(max_length=10, unique=True, db_index=True, editable=False)
     cliente_email = models.EmailField(blank=True)
     nota = models.CharField(max_length=255, blank=True)
     estado = models.CharField(max_length=20, choices=Estado.choices, default=Estado.PENDIENTE)
     total = models.PositiveIntegerField(default=0)
     empleado = models.ForeignKey(Empleado, null=True, blank=True, on_delete=models.SET_NULL)
+    cliente = models.ForeignKey(Cliente, null=True, blank=True, on_delete=models.SET_NULL, related_name="pedidos")
+    session_key = models.CharField(max_length=64, blank=True, null=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        if not self.codigo_pedido:
+            codigo = generate_codigo_pedido()
+            while Pedido.objects.filter(codigo_pedido=codigo).exists():
+                codigo = generate_codigo_pedido()
+            self.codigo_pedido = codigo
+        super().save(*args, **kwargs)
+
     def __str__(self) -> str:
-        return f"Pedido #{self.id}"
+        return f"{self.codigo_pedido} - {self.cliente_nombre}"
 
 
 class PedidoItem(models.Model):

@@ -50,7 +50,7 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:8000';
+        const API_BASE = window.location.origin;
 
         function setAuth(username, password, role) {
             localStorage.setItem('cafeAuth', btoa(`${username}:${password}`));
@@ -103,7 +103,7 @@
                 }
 
                 setAuth(u, p, data.role);
-                window.location.href = data.role === 'admin' ? '/admin/admin-panel.html' : '/admin/empleado-panel.html';
+                window.location.href = data.role === 'admin' ? '/admin-panel/' : '/empleado-panel/';
             } catch (e) {
                 console.error('Login error:', e);
                 loginErr.classList.add('visible');
@@ -115,7 +115,7 @@
         const token = localStorage.getItem('cafeAuth');
         const role = localStorage.getItem('cafeRole');
         if (token && role) {
-            window.location.href = role === 'admin' ? '/admin/admin-panel.html' : '/admin/empleado-panel.html';
+            window.location.href = role === 'admin' ? '/admin-panel/' : '/empleado-panel/';
         }
     </script>
 </body>

@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Usm | Mis Pedidos</title>
+    <link rel="stylesheet" href="{% static 'menu.css' %}">
+    <style>
+        .pedidos-wrapper {
+            min-height: 100vh;
+            padding: 7rem 5% 4rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .pedidos-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .pedidos-header h1 {
+            font-size: 1.8rem;
+            color: var(--color-1);
+        }
+        .pedidos-header h1 span { color: var(--color-3); }
+
+        .session-pill {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 6px 14px;
+        }
+
+        .auth-actions { display: flex; gap: 0.6rem; align-items: center; }
+
+        .btn-mini {
+            background: var(--color-2);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 0.55rem 1.1rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-mini:hover { background: var(--color-1); }
+        .btn-mini.outline {
+            background: transparent;
+            border: 1.5px solid var(--glass-border);
+            color: var(--color-1);
+        }
+
+        .pedido-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 22px;
+            padding: 1.4rem 1.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .pedido-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .pedido-codigo {
+            font-weight: 800;
+            color: var(--color-1);
+            font-size: 1.05rem;
+        }
+
+        .pedido-fecha {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .estado-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: capitalize;
+        }
+        .estado-badge.pendiente { background: rgba(234, 179, 8, 0.15); color: #b45309; }
+        .estado-badge.preparando { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+        .estado-badge.listo { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
+        .estado-badge.cancelado { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
+
+        .pedido-items {
+            margin: 0.9rem 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .pedido-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.6rem;
+        }
+
+        .pedido-total {
+            font-weight: 800;
+            color: var(--color-1);
+            font-size: 1.1rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-muted);
+        }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 0.8rem; }
+
+        @media (max-width: 600px) {
+            .pedidos-wrapper { padding: 6rem 5% 3rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-overlay"></div>
+
+    <nav class="glass-nav">
+        <div class="logo">CAFÉ<span>USM</span></div>
+        <ul class="nav-links">
+            <li><a href="/menu.html">Menú</a></li>
+        </ul>
+    </nav>
+
+    <main class="pedidos-wrapper">
+        <div class="pedidos-header">
+            <h1>Mis <span>Pedidos</span></h1>
+            <div class="auth-actions" id="authActions"></div>
+        </div>
+        <p class="session-pill" id="sessionPill" style="display:none">
+            Viendo pedidos de invitado de las últimas 12 horas. <a href="/login-cliente/" style="color:var(--color-2);font-weight:700;">Crea una cuenta</a> para verlos siempre.
+        </p>
+
+        <div id="pedidosList"></div>
+    </main>
+
+    <script src="{% static 'cliente-auth.js' %}"></script>
+    <script>
+        const API_BASE = window.location.origin;
+
+        function renderAuthActions() {
+            const el = document.getElementById('authActions');
+            if (CafeAuth.isClienteLoggedIn()) {
+                const info = CafeAuth.getClienteInfo() || {};
+                el.innerHTML = `
+                    <span style="font-size:0.85rem;color:var(--text-muted);">Hola, ${info.nombre || 'Cliente'}</span>
+                    <button class="btn-mini outline" onclick="cerrarSesion()">Cerrar sesión</button>
+                `;
+                document.getElementById('sessionPill').style.display = 'none';
+            } else {
+                el.innerHTML = `<a href="/login-cliente/" class="btn-mini">Iniciar Sesión / Registrarme</a>`;
+                document.getElementById('sessionPill').style.display = '';
+            }
+        }
+
+        function cerrarSesion() {
+            CafeAuth.logoutCliente();
+            cargarPedidos();
+            renderAuthActions();
+        }
+
+        function formatPrice(n) { return '$' + n.toLocaleString('es-CL'); }
+        function formatFecha(iso) {
+            const d = new Date(iso);
+            return d.toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' }) +
+                ' · ' + d.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        async function cargarPedidos() {
+            const listEl = document.getElementById('pedidosList');
+            try {
+                const res = await CafeAuth.apiFetchCliente(`${API_BASE}/mis-pedidos-data/`);
+                if (!res.ok) {
+                    listEl.innerHTML = `<div class="empty-state"><div class="icon">🧾</div><p>Todavía no tienes pedidos para mostrar.</p></div>`;
+                    return;
+                }
+                const pedidos = await res.json();
+
+                if (!pedidos.length) {
+                    listEl.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">🧾</div>
+                            <p>Todavía no tienes pedidos.</p>
+                            <p><a href="/menu.html" style="color:var(--color-2);font-weight:700;">Ir al menú →</a></p>
+                        </div>`;
+                    return;
+                }
+
+                listEl.innerHTML = pedidos.map(p => `
+                    <div class="pedido-card">
+                        <div class="pedido-top">
+                            <div>
+                                <div class="pedido-codigo">${p.codigo_pedido}</div>
+                                <div class="pedido-fecha">${formatFecha(p.created_at)}</div>
+                            </div>
+                            <span class="estado-badge ${p.estado}">${p.estado}</span>
+                        </div>
+                        <div class="pedido-items">
+                            ${p.items.map(i => `${i.cantidad}x ${i.nombre}`).join(' · ')}
+                        </div>
+                        <div class="pedido-bottom">
+                            <span class="pedido-total">${formatPrice(p.total)}</span>
+                            <a class="btn-mini outline" href="/recibo/${encodeURIComponent(p.codigo_pedido)}/">Ver Recibo</a>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                listEl.innerHTML = `<div class="empty-state"><p>No se pudieron cargar tus pedidos. Intenta nuevamente.</p></div>`;
+            }
+        }
+
+        renderAuthActions();
+        cargarPedidos();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,214 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Usm | Recibo</title>
+    <link rel="stylesheet" href="{% static 'menu.css' %}">
+    <style>
+        .recibo-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7rem 5% 4rem;
+        }
+
+        .recibo-card {
+            background: #fff;
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .recibo-brand {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .recibo-brand .logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--color-1);
+        }
+        .recibo-brand .logo span { color: var(--color-3); }
+
+        .recibo-codigo {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--color-1);
+            margin-bottom: 0.2rem;
+        }
+
+        .recibo-meta {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .recibo-divider {
+            border: none;
+            border-top: 1.5px dashed var(--glass-border);
+            margin: 1.2rem 0;
+        }
+
+        .recibo-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .recibo-item-name { color: var(--color-1); }
+        .recibo-item-qty { color: var(--text-muted); font-size: 0.78rem; }
+
+        .recibo-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--color-1);
+            margin-top: 0.8rem;
+        }
+
+        .recibo-estado {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .recibo-actions {
+            display: flex;
+            gap: 0.7rem;
+            margin-top: 1.8rem;
+        }
+
+        .btn-recibo {
+            flex: 1;
+            text-align: center;
+            border-radius: 14px;
+            padding: 0.8rem;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+        }
+        .btn-recibo.primary { background: var(--color-2); color: #fff; }
+        .btn-recibo.outline { background: transparent; border: 1.5px solid var(--glass-border); color: var(--color-1); }
+
+        .recibo-error {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 2rem 0;
+        }
+
+        @media print {
+            nav, .recibo-actions { display: none !important; }
+            .recibo-wrapper { padding: 0; }
+            .recibo-card { border: none; box-shadow: none; }
+            body { background: #fff; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-overlay"></div>
+
+    <nav class="glass-nav">
+        <div class="logo">CAFÉ<span>USM</span></div>
+        <ul class="nav-links">
+            <li><a href="/menu.html">Menú</a></li>
+            <li><a href="/mis-pedidos/">Mis Pedidos</a></li>
+        </ul>
+    </nav>
+
+    <main class="recibo-wrapper">
+        <div class="recibo-card" id="reciboCard">
+            <p class="recibo-error">Cargando recibo...</p>
+        </div>
+    </main>
+
+    <script src="{% static 'cliente-auth.js' %}"></script>
+    <script>
+        const API_BASE = window.location.origin;
+
+        function getCodigoFromUrl() {
+            const match = window.location.pathname.match(/\/recibo\/([^\/]+)\/?$/);
+            if (match) return decodeURIComponent(match[1]);
+            return new URLSearchParams(window.location.search).get('codigo');
+        }
+
+        function formatPrice(n) { return '$' + n.toLocaleString('es-CL'); }
+        function formatFecha(iso) {
+            const d = new Date(iso);
+            return d.toLocaleDateString('es-CL', { day: '2-digit', month: 'long', year: 'numeric' }) +
+                ' · ' + d.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        async function cargarRecibo() {
+            const card = document.getElementById('reciboCard');
+            const codigo = getCodigoFromUrl();
+
+            if (!codigo) {
+                card.innerHTML = '<p class="recibo-error">No se especificó un código de pedido.</p>';
+                return;
+            }
+
+            try {
+                const res = await CafeAuth.apiFetchCliente(`${API_BASE}/recibo-data/${encodeURIComponent(codigo)}/`);
+                if (res.status === 403) {
+                    card.innerHTML = '<p class="recibo-error">No tienes acceso a este recibo. Si es un pedido de invitado, debe tener menos de 12 horas.</p>';
+                    return;
+                }
+                if (res.status === 404) {
+                    card.innerHTML = '<p class="recibo-error">No encontramos un pedido con ese código.</p>';
+                    return;
+                }
+                if (!res.ok) throw new Error();
+
+                const p = await res.json();
+                card.innerHTML = `
+                    <div class="recibo-brand">
+                        <div class="logo">CAFÉ<span>USM</span></div>
+                    </div>
+                    <div class="recibo-codigo">${p.codigo_pedido}</div>
+                    <div class="recibo-meta">${formatFecha(p.created_at)}<br>${p.cliente_nombre || ''}</div>
+                    <hr class="recibo-divider">
+                    ${p.items.map(i => `
+                        <div class="recibo-row">
+                            <div>
+                                <div class="recibo-item-name">${i.nombre}</div>
+                                <div class="recibo-item-qty">x${i.cantidad} · ${formatPrice(i.precio)} c/u</div>
+                            </div>
+                            <span>${formatPrice(i.precio * i.cantidad)}</span>
+                        </div>
+                    `).join('')}
+                    <hr class="recibo-divider">
+                    <div class="recibo-total">
+                        <span>Total</span>
+                        <span>${formatPrice(p.total)}</span>
+                    </div>
+                    <div class="recibo-estado">
+                        <span class="estado-badge" style="background:rgba(98,78,136,0.1);color:var(--color-1);padding:5px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;text-transform:capitalize;">${p.estado}</span>
+                    </div>
+                    <div class="recibo-actions">
+                        <button class="btn-recibo primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+                        <a class="btn-recibo outline" href="/mis-pedidos/">Mis Pedidos</a>
+                    </div>
+                `;
+            } catch (e) {
+                card.innerHTML = '<p class="recibo-error">Ocurrió un error al cargar el recibo.</p>';
+            }
+        }
+
+        cargarRecibo();
+    </script>
+</body>
+
+</html>
