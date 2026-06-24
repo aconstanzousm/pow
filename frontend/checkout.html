@@ -392,6 +392,7 @@
             <li><a href="index.html">Inicio</a></li>
             <li><a href="menu.html">Menú</a></li>
             <li><a href="index.html#contacto">Contacto</a></li>
+            <li><a href="mis-pedidos.html">Mis Pedidos</a></li>
         </ul>
     </nav>
 
@@ -423,9 +424,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="inputEmail">Correo electrónico</label>
+                    <label for="inputEmail">Correo electrónico <span class="optional">(opcional)</span></label>
                     <input type="email" id="inputEmail" placeholder="tu@correo.com" autocomplete="email">
-                    <span class="error-msg" id="emailError">Ingresa un correo válido.</span>
+                    <span class="error-msg" id="emailError">Si ingresas correo, debe ser válido.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPhone">Número de teléfono</label>
+                    <input type="tel" id="inputPhone" placeholder="Tu número de teléfono" autocomplete="tel">
+                    <span class="error-msg" id="phoneError">Ingresa un número de teléfono válido.</span>
                 </div>
 
                 <div class="form-group">
@@ -463,12 +470,14 @@
             <p>&copy; 2026 Café Usm. Todos los derechos reservados.</p>
         </div>
     </footer>
-
+    <script src="{% static 'cliente-auth.js' %}"></script>
     <script>
+        const API_BASE = window.location.origin;
+
         // ── Verificar estado del café al entrar ──
         (async () => {
             try {
-                const res = await fetch('http://localhost:8000/cafe-status/');
+                const res = await fetch(`${API_BASE}/cafe-status/`);
                 if (res.ok) {
                     const data = await res.json();
                     if (!data.abierto) {
@@ -496,22 +505,98 @@
         const checkoutTotal = document.getElementById('checkoutTotal');
         const btn = document.getElementById('btnPay');
 
-        if (cart.length > 0) {
+        let latestProductsById = new Map();
+        let lastStockMessage = '';
+
+        function setStockMessage(msg) {
+            lastStockMessage = msg || '';
+            const host = document.getElementById('summaryItems');
+            const existing = document.getElementById('stockLiveMsg');
+            if (!lastStockMessage) {
+                if (existing) existing.remove();
+                return;
+            }
+            if (existing) {
+                existing.textContent = lastStockMessage;
+                return;
+            }
+            const el = document.createElement('div');
+            el.id = 'stockLiveMsg';
+            el.style.marginTop = '12px';
+            el.style.padding = '10px 12px';
+            el.style.borderRadius = '12px';
+            el.style.background = 'rgba(255,255,255,0.6)';
+            el.style.border = '1px solid var(--glass-border)';
+            el.style.color = 'var(--text-muted)';
+            el.style.fontSize = '0.85rem';
+            el.textContent = lastStockMessage;
+            host.appendChild(el);
+        }
+
+        function getLatestStock(productId) {
+            const p = latestProductsById.get(productId);
+            return p ? (p.stock ?? 0) : null;
+        }
+
+        function renderCartSummary() {
+            if (!cart.length) {
+                btn.disabled = true;
+                btn.textContent = 'Carrito vacío';
+                summaryItems.innerHTML = '<p class="empty-order">No hay items en el carrito.</p>';
+                checkoutTotal.textContent = formatPrice(0);
+                setStockMessage('');
+                return;
+            }
+
+            let insufficient = [];
             const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-            summaryItems.innerHTML = cart.map(item => `
+
+            summaryItems.innerHTML = cart.map(item => {
+                const stock = getLatestStock(item.id);
+                let stockLine = '';
+                if (stock !== null) {
+                    if (item.qty > stock) insufficient.push({ name: item.name, qty: item.qty, stock });
+                    stockLine = `<div class="summary-item-qty" style="margin-top:4px;color:${item.qty > stock ? '#e05c7a' : 'var(--text-muted)'}">Stock: ${stock} | Tu pedido: ${item.qty}</div>`;
+                }
+                return `
                 <div class="summary-item">
                     <div>
                         <div class="summary-item-name">${item.name}</div>
                         <div class="summary-item-qty">x${item.qty}</div>
+                        ${stockLine}
                     </div>
                     <span class="summary-item-price">${formatPrice(item.price * item.qty)}</span>
                 </div>
-            `).join('');
+            `;
+            }).join('');
             checkoutTotal.textContent = formatPrice(total);
-        } else {
-            btn.disabled = true;
-            btn.textContent = 'Carrito vacío';
+
+            if (insufficient.length) {
+                btn.disabled = true;
+                btn.textContent = 'Stock insuficiente';
+                const msg = 'Stock actualizado: ajusta tu pedido (' + insufficient.map(x => `${x.name} (${x.stock})`).join(', ') + ').';
+                setStockMessage(msg);
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Confirmar Pedido ✓';
+                setStockMessage('Stock actualizado en tiempo real.');
+            }
         }
+
+        async function refreshStock() {
+            if (!cart.length) return;
+            try {
+                const res = await fetch(`${API_BASE}/productos/`);
+                if (!res.ok) return;
+                const products = await res.json();
+                latestProductsById = new Map((products || []).map(p => [p.id, p]));
+                renderCartSummary();
+            } catch (e) { }
+        }
+
+        renderCartSummary();
+        refreshStock();
+        setInterval(refreshStock, 2500);
 
         async function submitOrder() {
             const name = document.getElementById('inputName');
@@ -525,7 +610,7 @@
             // Resetear errores
             [name, email].forEach(el => el.classList.remove('error'));
             [nameErr, emailErr].forEach(el => el.classList.remove('visible'));
-            emailErr.textContent = 'Ingresa un correo válido.';
+            emailErr.textContent = 'Si ingresas correo, debe ser válido.';
 
             if (!name.value.trim()) {
                 name.classList.add('error');
@@ -534,13 +619,16 @@
             }
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email.value.trim())) {
+            if (email.value.trim() && !emailRegex.test(email.value.trim())) {
                 email.classList.add('error');
                 emailErr.classList.add('visible');
                 valid = false;
             }
 
             if (!valid) return;
+
+            await refreshStock();
+            if (btn.disabled) return;
 
             btn.disabled = true;
             btn.textContent = 'Procesando...';
@@ -550,6 +638,7 @@
                 cliente_email: email.value.trim(),
                 nota: (note.value || '').trim(),
                 items: cart.map(i => ({
+                    producto_id: i.id,
                     nombre: i.name,
                     precio: i.price,
                     cantidad: i.qty
@@ -557,28 +646,52 @@
             };
 
             try {
-                const res = await fetch('http://localhost:8000/pedidos/', {
+                const res = await CafeAuth.apiFetchCliente(`${API_BASE}/pedidos/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
-                if (!res.ok) throw new Error(JSON.stringify(data));
+                if (!res.ok) {
+                    const msg =
+                        (data && data.items && (typeof data.items === 'string' ? data.items : JSON.stringify(data.items))) ||
+                        (data && data.error) ||
+                        (data && data.detail) ||
+                        'Error al procesar el pedido.';
+                    throw new Error(msg);
+                }
 
                 sessionStorage.removeItem('cafeCart');
                 document.getElementById('summaryItems').closest('.order-summary').style.display = 'none';
                 document.querySelector('.checkout-form-card').style.display = 'none';
                 const success = document.getElementById('successScreen');
                 const p = success.querySelector('p');
+                const codigo = data.codigo_pedido || `#${data.id}`;
                 if (p) {
-                    p.textContent = `Gracias por tu pedido (#${data.id}). Pronto nos pondremos en contacto contigo para coordinar.`;
+                    p.textContent = `Gracias por tu pedido. Tu código de seguimiento es ${codigo}. Guárdalo para consultar tu orden.`;
+                }
+                const linksHtml = success.querySelector('.success-links');
+                if (!linksHtml) {
+                    const div = document.createElement('div');
+                    div.className = 'success-links';
+                    div.style.display = 'flex';
+                    div.style.gap = '0.8rem';
+                    div.style.flexWrap = 'wrap';
+                    div.style.justifyContent = 'center';
+                    div.innerHTML = `
+                        <a href="/recibo/${encodeURIComponent(data.codigo_pedido)}/" class="btn-pay" style="background:var(--color-1)">Ver Recibo</a>
+                        <a href="/mis-pedidos/" class="btn-pay">Mis Pedidos</a>
+                        <a href="menu.html" class="btn-pay" style="background:transparent;border:1.5px solid var(--glass-border);color:var(--color-1)">Volver al Menú</a>
+                    `;
+                    success.appendChild(div);
                 }
                 success.classList.add('active');
             } catch (e) {
                 btn.disabled = false;
                 btn.textContent = 'Confirmar Pedido ✓';
-                emailErr.textContent = 'Error al procesar el pedido. Intenta nuevamente.';
+                emailErr.textContent = (e && e.message) ? e.message : 'Error al procesar el pedido. Intenta nuevamente.';
                 emailErr.classList.add('visible');
+                refreshStock();
             }
         }
         function toggleMobileNav() {

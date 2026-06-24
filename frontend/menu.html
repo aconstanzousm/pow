@@ -99,8 +99,42 @@
             padding: 0 1.1rem 1.1rem;
         }
 
+        .item-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+
+        .item-stock {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .item-stock.out {
+            color: #e05c7a;
+        }
+
         .item-card .item-add {
             font-size: 1.2rem;
+        }
+
+        .promo-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+
+        .promo-stock {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--text-muted);
+        }
+
+        .promo-stock.out {
+            color: #e05c7a;
         }
 
         .nav-right {
@@ -230,6 +264,7 @@
             <li><a href="index.html">Inicio</a></li>
             <li><a href="menu.html" class="active">Menú</a></li>
             <li><a href="index.html#contacto">Contacto</a></li>
+            <li><a href="mis-pedidos.html">Mis Pedidos</a></li>
         </ul>
 
         <div class="nav-right">
@@ -302,17 +337,33 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+    <script src="{% static 'cliente-auth.js' %}"></script>
+
     <script>
-        const API_BASE = 'http://localhost:8000';
+        const API_BASE = window.location.origin;
         let cart = [];
         let cafeAbierto = true;
+        let stockTicker = null;
 
         // ── Carrito ──
         function formatPrice(n) { return '$' + n.toLocaleString('es-CL'); }
 
-        function addToCart(id, name, price) {
+        async function addToCart(id, name, price, maxStock = 0) {
             if (!cafeAbierto) { showToast('La cafetería está cerrada 🔴'); return; }
+            let latestStock = maxStock;
+            try {
+                const res = await fetch(`${API_BASE}/productos/${id}/`);
+                if (res.ok) {
+                    const p = await res.json();
+                    latestStock = p.stock ?? latestStock;
+                }
+            } catch (e) { }
+            if (latestStock <= 0) { showToast('Producto agotado.'); return; }
             const existing = cart.find(i => i.id === id);
+            if (existing && existing.qty >= latestStock) {
+                showToast('No hay más stock disponible.');
+                return;
+            }
             if (existing) { existing.qty++; }
             else { cart.push({ id, name, price, qty: 1 }); }
             updateCartUI();
@@ -324,9 +375,25 @@
             updateCartUI();
         }
 
-        function changeQty(id, delta) {
+        async function changeQty(id, delta) {
             const item = cart.find(i => i.id === id);
             if (!item) return;
+
+            if (delta > 0) {
+                let latestStock = null;
+                try {
+                    const res = await fetch(`${API_BASE}/productos/${id}/`);
+                    if (res.ok) {
+                        const p = await res.json();
+                        latestStock = p.stock ?? null;
+                    }
+                } catch (e) { }
+                if (latestStock !== null && item.qty + delta > latestStock) {
+                    showToast('No hay más stock disponible.');
+                    return;
+                }
+            }
+
             item.qty += delta;
             if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
             updateCartUI();
@@ -444,14 +511,17 @@
                 if (promos.length) {
                     document.getElementById('promos-section').style.display = '';
                     document.getElementById('promos-grid').innerHTML = promos.map(p => `
-                    <div class="promo-card" onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio})" role="button" tabindex="0">
+                    <div class="promo-card" onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio}, ${p.stock || 0})" role="button" tabindex="0">
                         ${p.imagen ? `<img class="promo-img" src="${p.imagen}" alt="${escQ(p.nombre)}">` : ''}
                         <div class="promo-tag">Promo</div>
                         <h3>${p.nombre}</h3>
                         <p>${p.descripcion || ''}</p>
                         <div class="card-footer">
-                            <span class="price">$${p.precio.toLocaleString('es-CL')}</span>
-                            <span class="add-hint">+ Agregar</span>
+                            <div class="promo-meta">
+                                <span class="price">$${p.precio.toLocaleString('es-CL')}</span>
+                                <span class="promo-stock ${(p.stock || 0) > 0 ? '' : 'out'}" data-stock-id="${p.id}">Stock: ${p.stock ?? 0}</span>
+                            </div>
+                            <span class="add-hint" data-add-id="${p.id}">${(p.stock || 0) > 0 ? '+ Agregar' : 'Agotado'}</span>
                         </div>
                     </div>
                 `).join('');
@@ -483,7 +553,7 @@
     <div class="items-grid">
         ${items.map(p => `
         <div class="item-card"
-             onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio})"
+             onclick="addToCart(${p.id}, '${escQ(p.nombre)}', ${p.precio}, ${p.stock || 0})"
              role="button" tabindex="0">
             ${p.imagen
                             ? `<img class="product-img" src="${p.imagen}" alt="${escQ(p.nombre)}">`
@@ -493,8 +563,11 @@
                 <p>${p.descripcion || ''}</p>
             </div>
             <div class="item-right">
-                <span class="item-price">$${p.precio.toLocaleString('es-CL')}</span>
-                <span class="item-add">+</span>
+                <div class="item-meta">
+                    <span class="item-price">$${p.precio.toLocaleString('es-CL')}</span>
+                    <span class="item-stock ${(p.stock || 0) > 0 ? '' : 'out'}" data-stock-id="${p.id}">Stock: ${p.stock ?? 0}</span>
+                </div>
+                <span class="item-add" data-add-id="${p.id}">${(p.stock || 0) > 0 ? '+' : 'Agotado'}</span>
             </div>
         </div>`).join('')}
     </div>
@@ -505,11 +578,44 @@
                     el.addEventListener('keydown', e => { if (e.key === 'Enter') el.click(); });
                 });
 
+                startStockTicker();
+
             } catch (e) {
                 console.error('Error cargando menú:', e);
                 document.getElementById('cat-sections').innerHTML =
                     '<p style="text-align:center;padding:3rem 1rem;opacity:0.5;">No se pudo cargar el menú. Intenta recargando la página.</p>';
             }
+        }
+
+        async function refreshMenuStock() {
+            try {
+                const res = await fetch(`${API_BASE}/productos/`);
+                if (!res.ok) return;
+                const productos = await res.json();
+                const stockById = new Map((productos || []).map(p => [p.id, (p.stock ?? 0)]));
+
+                document.querySelectorAll('[data-stock-id]').forEach(el => {
+                    const id = parseInt(el.getAttribute('data-stock-id'));
+                    const stock = stockById.has(id) ? stockById.get(id) : null;
+                    if (stock === null) return;
+                    el.textContent = `Stock: ${stock}`;
+                    if (stock > 0) el.classList.remove('out');
+                    else el.classList.add('out');
+                });
+
+                document.querySelectorAll('[data-add-id]').forEach(el => {
+                    const id = parseInt(el.getAttribute('data-add-id'));
+                    const stock = stockById.has(id) ? stockById.get(id) : null;
+                    if (stock === null) return;
+                    el.textContent = stock > 0 ? (el.classList.contains('add-hint') ? '+ Agregar' : '+') : 'Agotado';
+                });
+            } catch (e) { }
+        }
+
+        function startStockTicker() {
+            if (stockTicker) clearInterval(stockTicker);
+            refreshMenuStock();
+            stockTicker = setInterval(refreshMenuStock, 2500);
         }
 
         loadMenuProducts();

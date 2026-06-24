@@ -24,8 +24,8 @@ class EmpleadoAdmin(admin.ModelAdmin):
 
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
-    list_display = ("id", "cliente_nombre", "estado", "total", "empleado", "created_at")
+    list_display = ("id", "codigo_pedido", "cliente_nombre", "estado", "total", "empleado", "created_at")
     list_filter = ("estado", "created_at")
-    search_fields = ("cliente_nombre", "cliente_email")
+    search_fields = ("codigo_pedido", "cliente_nombre", "cliente_email")
     inlines = [PedidoItemInline]
 

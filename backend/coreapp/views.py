@@ -10,8 +10,8 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 
-from .models import Empleado, Pedido, PedidoItem, Producto, CafeConfig
-from .serializers import EmpleadoSerializer, PedidoSerializer, ProductoSerializer, CafeConfigSerializer
+from .models import Empleado, Pedido, PedidoItem, Producto, CafeConfig, Cliente
+from .serializers import EmpleadoSerializer, PedidoSerializer, ProductoSerializer, ClienteSerializer
 
 
 # ── Login ──
@@ -44,6 +44,95 @@ def login_view(request):
         'user_id': user.id
     }, status=status.HTTP_200_OK)
 
+def _vincular_pedidos_invitado(cliente):
+    """Asocia al cliente todos los pedidos de invitado con el mismo email."""
+    Pedido.objects.filter(cliente__isnull=True, cliente_email__iexact=cliente.email).update(cliente=cliente)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def cliente_registro_view(request):
+    serializer = ClienteSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    cliente = serializer.save()
+    _vincular_pedidos_invitado(cliente)
+    return Response(
+        {'success': True, 'cliente': ClienteSerializer(cliente).data},
+        status=status.HTTP_201_CREATED
+    )
+
+
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def cliente_login_view(request):
+    username = (request.data.get('username') or '').strip()
+    password = (request.data.get('password') or '').strip()
+
+    if not username or not password:
+        return Response({'success': False, 'error': 'Usuario y contraseña son requeridos.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = authenticate(username=username, password=password)
+    if user is None:
+        return Response({'success': False, 'error': 'Usuario o contraseña incorrectos.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    cliente = getattr(user, 'cliente_profile', None)
+    if not cliente:
+        return Response({'success': False, 'error': 'Esta cuenta no corresponde a un cliente.'}, status=status.HTTP_403_FORBIDDEN)
+
+    _vincular_pedidos_invitado(cliente)
+    return Response({'success': True, 'cliente': ClienteSerializer(cliente).data})
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def mis_pedidos_view(request):
+    session_key = (request.headers.get('X-Session-Key') or '').strip()
+    limite_temporal = timezone.now() - timedelta(hours=12)
+
+    user = request.user
+    cliente = getattr(user, 'cliente_profile', None) if user and user.is_authenticated else None
+
+    if not cliente and not session_key:
+        return Response({'error': 'Se requiere sesión iniciada o clave de sesión temporal.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if cliente:
+        qs = Pedido.objects.filter(
+            models.Q(cliente=cliente) |
+            models.Q(session_key=session_key, cliente__isnull=True, created_at__gte=limite_temporal)
+        )
+    else:
+        qs = Pedido.objects.filter(session_key=session_key, created_at__gte=limite_temporal)
+
+    qs = qs.prefetch_related('items').order_by('-created_at').distinct()
+    return Response(PedidoSerializer(qs, many=True).data)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def recibo_pedido_view(request, codigo):
+    pedido = Pedido.objects.prefetch_related('items').filter(codigo_pedido=codigo).first()
+    if not pedido:
+        return Response({'error': 'Pedido no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+    session_key = (request.headers.get('X-Session-Key') or '').strip()
+    user = request.user
+    autorizado = False
+
+    if user and user.is_authenticated:
+        if user.is_staff or getattr(user, 'empleado_profile', None):
+            autorizado = True
+        cliente = getattr(user, 'cliente_profile', None)
+        if cliente and pedido.cliente_id == cliente.id:
+            autorizado = True
+
+    if not autorizado and session_key and pedido.session_key == session_key:
+        if pedido.created_at >= timezone.now() - timedelta(hours=12):
+            autorizado = True
+
+    if not autorizado:
+        return Response({'error': 'No tienes acceso a este recibo.'}, status=status.HTTP_403_FORBIDDEN)
+
+    return Response(PedidoSerializer(pedido).data)
 
 # ── Estado del café (abierto/cerrado) ──
 @api_view(['GET', 'PATCH'])
@@ -62,7 +151,22 @@ def cafe_status_view(request):
     if abierto is None:
         return Response({'error': 'Campo "abierto" requerido.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    config.abierto = bool(abierto)
+    if isinstance(abierto, bool):
+        abierto_bool = abierto
+    elif isinstance(abierto, str):
+        value = abierto.strip().lower()
+        if value in {"true", "1", "si", "sí", "on"}:
+            abierto_bool = True
+        elif value in {"false", "0", "no", "off"}:
+            abierto_bool = False
+        else:
+            return Response({'error': 'El campo "abierto" debe ser booleano.'}, status=status.HTTP_400_BAD_REQUEST)
+    elif isinstance(abierto, (int, float)):
+        abierto_bool = bool(abierto)
+    else:
+        return Response({'error': 'El campo "abierto" debe ser booleano.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    config.abierto = abierto_bool
     config.save()
     return Response({'abierto': config.abierto})
 
@@ -230,6 +334,36 @@ class PedidoViewSet(viewsets.ModelViewSet):
             return
         serializer.save()
 
+    def perform_create(self, serializer):
+        session_key = (self.request.headers.get('X-Session-Key') or '').strip() or None
+        extra = {'session_key': session_key}
+        user = self.request.user
+        if user and user.is_authenticated:
+            cliente = getattr(user, 'cliente_profile', None)
+            if cliente:
+                extra['cliente'] = cliente
+        serializer.save(**extra)
+
+    def update(self, request, *args, **kwargs):
+        user = getattr(request, "user", None)
+        if user and user.is_authenticated and not user.is_staff:
+            allowed_fields = {"estado"}
+            received_fields = set(request.data.keys())
+            if not received_fields or not received_fields.issubset(allowed_fields):
+                return Response(
+                    {'error': 'Los empleados solo pueden cambiar el estado del pedido.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            nuevo_estado = request.data.get("estado")
+            if nuevo_estado not in {Pedido.Estado.PREPARANDO, Pedido.Estado.LISTO}:
+                return Response(
+                    {'error': 'Los empleados solo pueden marcar pedidos como preparando o listo.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        return super().update(request, *args, **kwargs)
+
 
 # ── Frontend Views ──
 class IndexView(TemplateView):
@@ -258,3 +392,12 @@ class AdminPanelView(TemplateView):
 
 class EmpleadoPanelView(TemplateView):
     template_name = "admin/empleado-panel.html"
+
+class LoginClienteView(TemplateView):
+    template_name = "login-cliente.html"
+
+class MisPedidosView(TemplateView):
+    template_name = "mis-pedidos.html"
+
+class ReciboView(TemplateView):
+    template_name = "recibo.html"

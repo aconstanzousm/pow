@@ -14,10 +14,10 @@ class CoreappConfig(AppConfig):
             User = get_user_model()
             username = getattr(settings, "DEFAULT_ADMIN_USERNAME", "admin")
             password = getattr(settings, "DEFAULT_ADMIN_PASSWORD", "admin123")
-            user, _ = User.objects.get_or_create(username=username)
+            user, created = User.objects.get_or_create(username=username)
             user.is_staff = True
             user.is_superuser = True
-            if password:
+            if created and password:
                 user.set_password(password)
             user.save()
 

@@ -144,18 +144,19 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        const API_BASE = 'http://localhost:8000';
+        const API_BASE = window.location.origin;
+        const LOGIN_URL = '/admin-login/';
         const token = localStorage.getItem('cafeAuth');
         const role = localStorage.getItem('cafeRole');
         const username = localStorage.getItem('cafeUser') || '';
-        if (!token || role !== 'empleado') { window.location.href = '/admin-login/'; }
+        if (!token || role !== 'empleado') { window.location.href = LOGIN_URL; }
         document.getElementById('userChip').textContent = `👤 ${username}`;
 
         function logout() {
             localStorage.removeItem('cafeAuth');
             localStorage.removeItem('cafeRole');
             localStorage.removeItem('cafeUser');
-            window.location.href = '/admin-login/';
+            window.location.href = LOGIN_URL;
         }
 
         async function apiFetch(path, options = {}) {
@@ -195,6 +196,7 @@
         function mapOrder(o) {
             return {
                 id: o.id,
+                code: o.codigo_pedido || `#${o.id}`,
                 client: o.cliente_nombre || '—',
                 email: o.cliente_email || '—',
                 note: o.nota || '',
@@ -235,7 +237,7 @@
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             document.getElementById('sec-' + name).classList.add('active');
             document.querySelector(`[onclick="showSection('${name}')"]`).classList.add('active');
-            const titles = { cola: 'Cola de Pedidos', nuevo: 'Nuevo Pedido', historial: 'Historial' };
+            const titles = { cola: 'Cola de Pedidos', nuevo: 'Nuevo Pedido', historial: 'Historial', stock: 'Stock' };
             document.getElementById('panelTitle').textContent = titles[name];
             if (name === 'stock') { await loadProducts(); renderStock(); }
 
@@ -275,7 +277,7 @@
         <div class="order-card">
             <div class="order-card-header">
                 <div>
-                    <span class="order-id">#${o.id}</span>
+                    <span class="order-id">${o.code}</span>
                     <span class="order-time">${o.time}</span>
                 </div>
                 <span class="badge ${statusClass[o.status]}">${statusLabel[o.status]}</span>
@@ -319,16 +321,21 @@
         function buildProductPicker() {
             newOrderItems = [];
             renderSelectedItems();
-            const prods = products.filter(p => p.status === 'activo');
+            const prods = products.filter(p => p.status === 'activo' && p.stock > 0);
             const cats = [...new Set(prods.map(p => p.cat))];
             const picker = document.getElementById('productPicker');
+
+            if (!prods.length) {
+                picker.innerHTML = '<p class="empty-state">No hay productos disponibles con stock.</p>';
+                return;
+            }
 
             picker.innerHTML = cats.map(cat => `
         <div class="picker-cat">
             <div class="picker-cat-label">${cat}</div>
             <div class="picker-items">
                 ${prods.filter(p => p.cat === cat).map(p => `
-                    <button class="picker-item" onclick="addPickerItem(${p.id},'${p.name.replace(/'/g, "\\'")}',${p.price})">
+                    <button class="picker-item" onclick="addPickerItem(${p.id},'${p.name.replace(/'/g, "\\'")}',${p.price},${p.stock})">
                         <span>${p.name}</span>
                         <span class="picker-price">$${p.price.toLocaleString('es-CL')}</span>
                     </button>
@@ -338,8 +345,16 @@
     `).join('');
         }
 
-        function addPickerItem(id, name, price) {
+        function addPickerItem(id, name, price, maxStock) {
+            if (maxStock <= 0) {
+                showToast('Ese producto ya no tiene stock.');
+                return;
+            }
             const existing = newOrderItems.find(i => i.id === id);
+            if (existing && existing.qty >= maxStock) {
+                showToast('No hay más stock disponible.');
+                return;
+            }
             if (existing) { existing.qty++; }
             else { newOrderItems.push({ id, name, price, qty: 1 }); }
             renderSelectedItems();
@@ -396,8 +411,8 @@
             };
 
             apiFetch('/pedidos/', { method: 'POST', body: JSON.stringify(payload) })
-                .then(async () => {
-                    showToast('Pedido registrado ✓');
+                .then(async (data) => {
+                    showToast(`Pedido ${data.codigo_pedido || `#${data.id}`} registrado ✓`);
                     newOrderItems = [];
                     document.getElementById('nClient').value = '';
                     document.getElementById('nEmail').value = '';
@@ -419,7 +434,7 @@
                 return `
         <div class="order-card done-card">
             <div class="order-card-header">
-                <div><span class="order-id">#${o.id}</span><span class="order-time">${o.time}</span></div>
+                <div><span class="order-id">${o.code}</span><span class="order-time">${o.time}</span></div>
                 <span class="badge badge-done">🟢 Listo</span>
             </div>
             <div class="order-client"><strong>${o.client}</strong></div>
