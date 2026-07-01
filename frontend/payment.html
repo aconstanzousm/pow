@@ -1,85 +1,141 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú de la Cafetería</title>
-    <!-- Latest compiled and minified CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Cafe Usm | Pago</title>
+    <link rel="stylesheet" href="{% static 'menu.css' %}">
+    <style>
+        .payment-wrap {
+            min-height: 100vh;
+            padding: 7rem 5% 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    <!-- Latest compiled JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+        .payment-card {
+            width: 100%;
+            max-width: 960px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 1.4rem;
+        }
+
+        .payment-panel {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.76);
+            box-shadow: var(--shadow-soft);
+            border-radius: 30px;
+            padding: 2rem;
+            backdrop-filter: blur(18px);
+        }
+
+        .payment-panel h1,
+        .payment-panel h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--color-1);
+        }
+
+        .payment-panel h1 span,
+        .payment-panel h2 span {
+            color: var(--color-3);
+        }
+
+        .payment-panel p,
+        .payment-list li {
+            color: var(--text-muted);
+        }
+
+        .payment-list {
+            margin-top: 1rem;
+            padding-left: 1rem;
+            display: grid;
+            gap: 0.6rem;
+        }
+
+        .payment-steps {
+            display: grid;
+            gap: 0.9rem;
+            margin-top: 1.2rem;
+        }
+
+        .payment-step {
+            padding: 1rem 1.1rem;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.68);
+            border: 1px solid rgba(93,59,34,0.08);
+        }
+
+        .payment-step strong {
+            display: block;
+            color: var(--color-1);
+            margin-bottom: 0.2rem;
+        }
+
+        .payment-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 1.6rem;
+        }
+
+        @media (max-width: 820px) {
+            .payment-card {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-
 <body>
+    <div class="background-overlay"></div>
 
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">Tumami Cafetería</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="mynavbar">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="menu.html">Menú</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="aboutus.html">Sobre nosotros</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+    <nav class="glass-nav">
+        <div class="logo">CAFE<span>USM</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="menu.html">Menu</a></li>
+            <li><a href="payment.html" class="active">Pago</a></li>
+        </ul>
     </nav>
 
-    <!-- Carousel -->
-    <div id="demo" class="carousel slide" data-bs-ride="">
-        <!-- The slideshow/carousel -->
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="https://picsum.photos/id/684/600/400" alt="Menú de la Cafetería" class="d-block w-100"
-                    style="height: 400px;">
-                <div class="carousel-caption">
-                    <h3>PAGO</h3>
-                    <p>Completa la información de pago para finalizar tu pedido.</p>
+    <main class="payment-wrap">
+        <div class="payment-card">
+            <section class="payment-panel">
+                <h1>Proceso de <span>pago</span></h1>
+                <p>Esta pantalla queda preparada como etapa visual de confirmacion. El flujo principal hoy se resuelve en checkout, pero esta vista ahora mantiene el mismo estilo premium del resto del sitio.</p>
+                <div class="payment-steps">
+                    <div class="payment-step">
+                        <strong>1. Revisar pedido</strong>
+                        <span>Confirmar productos, cantidades y total.</span>
+                    </div>
+                    <div class="payment-step">
+                        <strong>2. Confirmar datos</strong>
+                        <span>Validar nombre, correo y notas para la entrega.</span>
+                    </div>
+                    <div class="payment-step">
+                        <strong>3. Finalizar</strong>
+                        <span>Mostrar comprobante y codigo de seguimiento.</span>
+                    </div>
                 </div>
-            </div>
+                <div class="payment-actions">
+                    <a href="checkout.html" class="btn-pay">Volver al checkout</a>
+                    <a href="menu.html" class="btn-recibo outline">Seguir comprando</a>
+                </div>
+            </section>
+
+            <aside class="payment-panel">
+                <h2>Que podria <span>incluir</span></h2>
+                <ul class="payment-list">
+                    <li>Resumen final del pedido.</li>
+                    <li>Metodo de pago seleccionado.</li>
+                    <li>Datos de retiro o entrega.</li>
+                    <li>Estado visual de confirmacion.</li>
+                </ul>
+                <p style="margin-top:1.2rem;">Queda presentada como una vista bonita, coherente y lista para crecer si despues quieres incorporar una pasarela o un flujo de pago mas real.</p>
+            </aside>
         </div>
-    </div>
-    <!-- End of Carousel -->
-
-
-    <div class="container-fluid bg-dark text-white p-4">
-        <div class="row">
-            <div class="col text-center mt-5">
-                <h1>¡Gracias por tu pedido!</h1>
-                <p>Por favor, completa la siguiente información para que podamos procesar tu pago y entregar tu pedido.</p>
-            </div>
-        </div>
-    <!-- Formulario de pago - Información del cliente (Nombre, Nota) -->
-    <div class="container mt-5 bg-dark text-white p-4 rounded">
-        <h2>Información de Pago</h2>
-        <form>
-            <div class="mb-3">
-                <label for="name" class="form-label">Nombre Completo</label>
-                <input type="text" class="form-control" id="name" placeholder="Con este nombre te llamarán para entregar tu pedido" required>
-            </div>
-            <div class="mb-3">
-                <label for="note" class="form-label">Nota para el pedido (opcional)</label>
-                <textarea class="form-control" id="note" rows="3" placeholder="Agrega alguna nota para tu pedido.
-Por ejemplo, si tienes alergias, preferencias especiales, o si quieres que dibujemos una carita feliz :)"></textarea>
-            </div>
-            <!-- Aquí se podrían agregar más campos como dirección, método de pago, etc. -->
-            <button type="submit" class="btn btn-primary">Ir a pagar</button>
-        </form>
-    </div>
-
-    <footer class="bg-dark text-white text-center p-3 mt-5">
-        <p>&copy; 2024 Tumami Cafetería. Todos los derechos reservados.</p>
-    </footer>
+    </main>
 </body>
 </html>

@@ -1,16 +1,99 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página para hacer tests</title>
+    <title>Cafe Usm | Test</title>
+    <link rel="stylesheet" href="{% static 'menu.css' %}">
+    <style>
+        .test-wrap {
+            min-height: 100vh;
+            padding: 7rem 5% 4rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .test-card {
+            width: 100%;
+            max-width: 820px;
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.78);
+            box-shadow: var(--shadow-soft);
+            border-radius: 30px;
+            padding: 2rem;
+            backdrop-filter: blur(16px);
+        }
+
+        .test-card h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--color-1);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            margin-bottom: 0.8rem;
+        }
+
+        .test-card h1 span {
+            color: var(--color-3);
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.6rem;
+        }
+
+        .test-box {
+            border-radius: 22px;
+            padding: 1rem;
+            background: rgba(255,255,255,0.7);
+            border: 1px solid rgba(93,59,34,0.08);
+        }
+
+        .test-box strong {
+            display: block;
+            color: var(--color-1);
+            margin-bottom: 0.3rem;
+        }
+
+        .test-box span,
+        .test-card p {
+            color: var(--text-muted);
+        }
+    </style>
 </head>
 <body>
-    <div class="container bg-dark text-white p-4">
-        <h1>¡Esta es una página de prueba!</h1>
-        <p>Aquí puedes realizar pruebas y experimentos sin afectar el contenido principal del sitio.</p>
-    </div>
-    
+    <div class="background-overlay"></div>
 
+    <nav class="glass-nav">
+        <div class="logo">CAFE<span>USM</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="menu.html">Menu</a></li>
+            <li><a href="test.html" class="active">Test</a></li>
+        </ul>
+    </nav>
+
+    <main class="test-wrap">
+        <section class="test-card">
+            <h1>Zona de <span>pruebas</span></h1>
+            <p>Esta pagina queda estilizada para usarla como laboratorio visual o tecnico sin romper la identidad del resto del sitio.</p>
+            <div class="test-grid">
+                <div class="test-box">
+                    <strong>UI</strong>
+                    <span>Probar componentes, botones y estados.</span>
+                </div>
+                <div class="test-box">
+                    <strong>API</strong>
+                    <span>Comprobar endpoints y respuestas.</span>
+                </div>
+                <div class="test-box">
+                    <strong>Ideas</strong>
+                    <span>Experimentar nuevas secciones antes de publicarlas.</span>
+                </div>
+            </div>
+        </section>
+    </main>
 </body>
 </html>

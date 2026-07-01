@@ -1,37 +1,95 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sobre nosotros - Cafetería Tumami</title>
-    <!-- Latest compiled and minified CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Latest compiled JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Cafe Usm | Sobre Nosotros</title>
+    <link rel="stylesheet" href="{% static 'index.css' %}">
 </head>
 <body>
-  <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">Tumami Cafetería</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="mynavbar">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="menu.html">Menú</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="aboutus.html">Sobre nosotros</a>
-                    </li>
-                </ul>
+    <div class="background-overlay"></div>
+
+    <nav class="glass-nav">
+        <div class="logo">CAFE<span>USM</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="menu.html">Menu</a></li>
+            <li><a href="aboutus.html" class="active">Nosotros</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="hero" style="min-height:70vh;">
+            <div class="hero-text">
+                <h1>Nuestra <span>esencia</span></h1>
+                <p>Cafe Usm nace para ofrecer una experiencia calida, elegante y cercana. Combinamos cafe de calidad, reposteria fresca y una atencion pensada para que cada pedido se sienta especial.</p>
+                <div class="cta-group">
+                    <a href="menu.html" class="btn-main">Ver menu</a>
+                    <a href="#historia" class="btn-outline">Conocer mas</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="historia" class="about-section">
+            <div class="about-grid">
+                <div class="about-image-container">
+                    <div class="img-placeholder pastry-chef-img"></div>
+                </div>
+                <div class="about-text">
+                    <h2>Lo que nos <span>mueve</span></h2>
+                    <p>Detras del proyecto hay una idea simple: hacer que pedir cafe online se sienta tan acogedor como entrar a una cafeteria bonita. Por eso cuidamos tanto el sabor como la presentacion y el detalle.</p>
+                    <h3 class="sub-title">Nuestra mision</h3>
+                    <p>Preparar productos con identidad, buena materia prima y una atencion humana que haga volver a cada cliente.</p>
+                    <h3 class="sub-title">Nuestra vision</h3>
+                    <p>Convertirnos en una referencia local de cafeteria digital, combinando experiencia estetica, rapidez y buena cocina.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="specials-section">
+            <div class="section-header center">
+                <h2>Nuestros <span>pilares</span></h2>
+                <p>Todo el proyecto gira en torno a tres ideas claras.</p>
+            </div>
+            <div class="specials-grid">
+                <div class="special-card">
+                    <div class="special-img img-coffee"></div>
+                    <h3>Calidad</h3>
+                    <p>Productos ricos, consistentes y bien presentados para que la experiencia se note desde la primera impresion.</p>
+                </div>
+                <div class="special-card">
+                    <div class="special-img img-atencion"></div>
+                    <h3>Cercania</h3>
+                    <p>Un sistema pensado para que pedir sea facil, claro y amable, tanto para clientes como para el equipo interno.</p>
+                </div>
+                <div class="special-card">
+                    <div class="special-img img-calidad"></div>
+                    <h3>Detalle</h3>
+                    <p>Cuidamos la estetica, la navegacion y la informacion para transmitir una imagen mas profesional y atractiva.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="glass-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">CAFE<span>USM</span></div>
+                <p>Disenado para que cada pedido se vea y se sienta mejor.</p>
+            </div>
+            <div class="footer-info">
+                <h3>Contacto</h3>
+                <p>Concepcion, Chile</p>
+                <p>contacto@cafeusm.cl</p>
+            </div>
+            <div class="footer-info">
+                <h3>Explorar</h3>
+                <p><a href="index.html" style="color:inherit;text-decoration:none;">Inicio</a></p>
+                <p><a href="menu.html" style="color:inherit;text-decoration:none;">Menu</a></p>
             </div>
         </div>
-    </nav>
+        <div class="footer-bottom">Cafe Usm</div>
+    </footer>
 </body>
 </html>
