@@ -414,7 +414,7 @@
 
             <!-- Formulario -->
             <div class="checkout-form-card">
-                <a href="menu.html" class="back-link">← Volver al menú</a>
+                <a href="menu.html" class="back-link">Volver al menú</a>
                 <h2>Tus <span>Datos</span></h2>
 
                 <div class="form-group">
@@ -428,19 +428,12 @@
                     <input type="email" id="inputEmail" placeholder="tu@correo.com" autocomplete="email">
                     <span class="error-msg" id="emailError">Si ingresas correo, debe ser válido.</span>
                 </div>
-
-                <div class="form-group">
-                    <label for="inputPhone">Número de teléfono</label>
-                    <input type="tel" id="inputPhone" placeholder="Tu número de teléfono" autocomplete="tel">
-                    <span class="error-msg" id="phoneError">Ingresa un número de teléfono válido.</span>
-                </div>
-
                 <div class="form-group">
                     <label for="inputNote">Nota <span class="optional">(opcional)</span></label>
                     <textarea id="inputNote" rows="3" placeholder="Alergias, preferencias, dedicatoria..."></textarea>
                 </div>
 
-                <button class="btn-pay" id="btnPay" onclick="submitOrder()">Confirmar Pedido ✓</button>
+                <button class="btn-pay" id="btnPay" onclick="submitOrder()">Confirmar Pedido</button>
             </div>
 
             <!-- Pantalla de éxito (oculta al inicio) -->
@@ -578,7 +571,7 @@
                 setStockMessage(msg);
             } else {
                 btn.disabled = false;
-                btn.textContent = 'Confirmar Pedido ✓';
+                btn.textContent = 'Confirmar Pedido';
                 setStockMessage('Stock actualizado en tiempo real.');
             }
         }
@@ -681,14 +674,13 @@
                     div.innerHTML = `
                         <a href="/recibo/${encodeURIComponent(data.codigo_pedido)}/" class="btn-pay" style="background:var(--color-1)">Ver Recibo</a>
                         <a href="/mis-pedidos/" class="btn-pay">Mis Pedidos</a>
-                        <a href="menu.html" class="btn-pay" style="background:transparent;border:1.5px solid var(--glass-border);color:var(--color-1)">Volver al Menú</a>
                     `;
                     success.appendChild(div);
                 }
                 success.classList.add('active');
             } catch (e) {
                 btn.disabled = false;
-                btn.textContent = 'Confirmar Pedido ✓';
+                btn.textContent = 'Confirmar Pedido';
                 emailErr.textContent = (e && e.message) ? e.message : 'Error al procesar el pedido. Intenta nuevamente.';
                 emailErr.classList.add('visible');
                 refreshStock();

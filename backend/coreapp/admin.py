@@ -7,7 +7,6 @@ class PedidoItemInline(admin.TabularInline):
     model = PedidoItem
     extra = 0
 
-
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
     list_display = ("id", "nombre", "categoria", "precio", "activo")

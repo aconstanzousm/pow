@@ -143,6 +143,35 @@
             gap: 12px;
         }
 
+        .auth-btn {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 6px 14px;
+            background: rgba(98, 78, 136, 0.15);
+            border: 1px solid rgba(98, 78, 136, 0.3);
+            border-radius: 20px;
+            color: var(--color-1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            background: rgba(98, 78, 136, 0.25);
+            border-color: rgba(98, 78, 136, 0.5);
+        }
+
+        .auth-btn.logout {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #dc2626;
+        }
+
+        .auth-btn.logout:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
         .cafe-status-badge {
             font-size: 0.78rem;
             font-weight: 700;
@@ -244,6 +273,16 @@
             .nav-right {
                 order: 2;
                 margin-left: auto;
+                gap: 8px;
+            }
+
+            .auth-btn {
+                font-size: 0.75rem;
+                padding: 4px 10px;
+            }
+
+            .cart-btn {
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -271,6 +310,9 @@
             <span class="cafe-status-badge" id="cafeStatusBadge" style="display:none"></span>
             <button class="cart-btn" id="cartBtn" onclick="openCart()">
                 🛒 <span class="cart-count" id="cartCount">0</span>
+            </button>
+            <button class="auth-btn" id="authBtn" onclick="toggleAuthAction()">
+                Iniciar Sesión
             </button>
         </div>
     </nav>
@@ -329,7 +371,7 @@
                     <span>Total</span>
                     <span id="cartTotal">$0</span>
                 </div>
-                <button class="btn-checkout" onclick="goToCheckout()">Ir a Pagar →</button>
+                <button class="btn-checkout" onclick="goToCheckout()">Ir a Pagar</button>
             </div>
         </div>
     </div>
@@ -623,6 +665,35 @@
         function toggleMobileNav() {
             document.getElementById('navLinks').classList.toggle('open');
         }
+
+        // ── Autenticación ──
+        function updateAuthButton() {
+            const authBtn = document.getElementById('authBtn');
+            if (CafeAuth.isClienteLoggedIn()) {
+                const clienteInfo = CafeAuth.getClienteInfo();
+                const nombre = clienteInfo?.nombre || 'Usuario';
+                authBtn.textContent = `Cerrar Sesión`;
+                authBtn.classList.add('logout');
+                authBtn.title = 'Cerrar Sesión';
+            } else {
+                authBtn.textContent = 'Iniciar Sesión';
+                authBtn.classList.remove('logout');
+                authBtn.title = 'Iniciar Sesión';
+            }
+        }
+
+        function toggleAuthAction() {
+            if (CafeAuth.isClienteLoggedIn()) {
+                CafeAuth.logoutCliente();
+                showToast('Sesión cerrada ✓');
+                updateAuthButton();
+            } else {
+                window.location.href = 'login-cliente.html';
+            }
+        }
+
+        // Actualizar botón al cargar la página
+        updateAuthButton();
     </script>
 </body>
 
